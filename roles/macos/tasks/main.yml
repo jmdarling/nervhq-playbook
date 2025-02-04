@@ -1,0 +1,67 @@
+- name: Update package manager cache
+  community.general.homebrew:
+    update_homebrew: yes
+
+## INSTALL SOFTWARE
+
+# Tools and utilities
+- name: Install command line packages
+  community.general.homebrew:
+    name:
+      - fastfetch
+      - git
+      - helix
+      - zoxide
+    state: latest
+
+- name: Install secrets manager
+  community.general.homebrew_cask:
+    name: 1password
+    state: latest
+
+- name: Install terminal
+  community.general.homebrew_cask:
+    name: ghostty
+    state: latest
+
+# Productivity
+- name: Install launcher
+  community.general.homebrew_cask:
+    name: raycast
+    state: latest
+
+- name: Install notes manager
+  community.general.homebrew_cask:
+    name: obsidian
+    state: latest
+
+- name: Install text editor
+  community.general.homebrew_cask:
+    name: visual-studio-code
+    state: latest
+
+- name: Install web browser
+  community.general.homebrew_cask:
+    name: 
+      - firefox
+      - zen-browser
+    state: latest
+
+# Communication
+- name: Install communication tools
+  community.general.homebrew_cask:
+    name: discord
+    state: latest
+
+# Entertainment
+- name: Install music player
+  community.general.homebrew_cask:
+    name: 
+    - spotify
+    state: latest
+
+- name: Install video player
+  community.general.homebrew_cask:
+    name: vlc
+    state: latest
+
