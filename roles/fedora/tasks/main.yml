@@ -11,6 +11,7 @@
     name:
       - fastfetch
       - git
+      - helix
       - tmux
       - zoxide
     state: latest
@@ -69,7 +70,9 @@
 
 - name: Install web browser
   community.general.flatpak:
-    name: org.mozilla.firefox
+    name: 
+      - org.mozilla.firefox
+      - app.zen_browser.zen
     state: latest
   become: yes
 
@@ -89,7 +92,9 @@
 
 - name: Install music player
   community.general.flatpak:
-    name: com.spotify.Client
+    name: 
+    - com.spotify.Client
+    - com.mastermindzh.tidal-hifi
     state: latest
   become: yes
 
