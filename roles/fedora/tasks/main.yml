@@ -113,3 +113,7 @@
      - vlc
     state: absent
   become: yes
+
+- name: Apply dotfiles
+  ansible.builtin.include_role:
+    name: dotfiles

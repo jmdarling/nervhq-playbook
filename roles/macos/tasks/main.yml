@@ -11,6 +11,7 @@
       - fastfetch
       - git
       - helix
+      - stow
       - zoxide
     state: latest
 
@@ -65,3 +66,12 @@
     name: vlc
     state: latest
 
+# Fonts
+- name: Install fonts
+  community.general.homebrew_cask:
+    name: font-hack-nerd-font
+    state: latest
+
+- name: Apply dotfiles
+  ansible.builtin.include_role:
+    name: dotfiles
