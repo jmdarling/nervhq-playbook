@@ -43,6 +43,11 @@
     name: visual-studio-code
     state: latest
 
+- name: Install window manager
+  community.general.homebrew_cask:
+    name: rectangle
+    state: latest
+
 - name: Install web browser
   community.general.homebrew_cask:
     name: 
