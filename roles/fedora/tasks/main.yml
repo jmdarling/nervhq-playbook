@@ -10,6 +10,7 @@
   ansible.builtin.dnf:
     name:
       - fastfetch
+      - fzf
       - git
       - helix
       - starship
