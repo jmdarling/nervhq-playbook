@@ -11,6 +11,7 @@
       - fastfetch
       - git
       - helix
+      - starship
       - stow
       - zoxide
     state: latest

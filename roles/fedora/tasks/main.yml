@@ -12,7 +12,8 @@
       - fastfetch
       - git
       - helix
-      - tmux
+      - starship
+      - stow
       - zoxide
     state: latest
   become: yes
