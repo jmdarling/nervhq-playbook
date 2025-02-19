@@ -52,12 +52,6 @@
   become: yes
 
 # Productivity
-- name: Install launcher
-  ansible.builtin.dnf:
-    name: ulauncher
-    state: latest
-  become: yes
-
 - name: Install notes manager
   community.general.flatpak:
     name: md.obsidian.Obsidian
@@ -96,7 +90,6 @@
   community.general.flatpak:
     name: 
     - com.spotify.Client
-    - com.mastermindzh.tidal-hifi
     state: latest
   become: yes
 
@@ -106,15 +99,7 @@
     state: latest
   become: yes
 
-## REMOVE UNUSED SOFTWARE.
-- name: Remove unneeded software
-  ansible.builtin.dnf:
-    name:
-     - firefox
-     - totem
-     - vlc
-    state: absent
-  become: yes
+## Dotfile management
 
 - name: Apply dotfiles
   ansible.builtin.include_role:
