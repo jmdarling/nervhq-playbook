@@ -21,45 +21,48 @@
   community.general.homebrew_cask:
     name: 1password
     state: latest
+    greedy: yes
 
 - name: Install terminal
   community.general.homebrew_cask:
     name: ghostty
     state: latest
+    greedy: yes
 
 # Productivity
-- name: Install launcher
-  community.general.homebrew_cask:
-    name: raycast
-    state: latest
-
 - name: Install notes manager
   community.general.homebrew_cask:
     name: obsidian
     state: latest
+    greedy: yes
 
 - name: Install text editor
   community.general.homebrew_cask:
     name: visual-studio-code
     state: latest
+    greedy: yes
 
 - name: Install window manager
   community.general.homebrew_cask:
     name: rectangle
     state: latest
+    greedy: yes
 
 - name: Install web browser
   community.general.homebrew_cask:
     name: 
+      - brave-browser
       - firefox
       - zen-browser
     state: latest
+    greedy: yes
 
 # Communication
 - name: Install communication tools
   community.general.homebrew_cask:
     name: discord
     state: latest
+    greedy: yes
 
 # Entertainment
 - name: Install music player
@@ -67,11 +70,13 @@
     name: 
     - spotify
     state: latest
+    greedy: yes
 
 - name: Install video player
   community.general.homebrew_cask:
     name: vlc
     state: latest
+    greedy: yes
 
 # Fonts
 - name: Install fonts
