@@ -42,6 +42,12 @@
     state: latest
     greedy: yes
 
+- name: Install toto list manager
+  community.general.homebrew_cask:
+    name: ticktick
+    state: latest
+    greedy: yes
+
 - name: Install window manager
   community.general.homebrew_cask:
     name: rectangle
