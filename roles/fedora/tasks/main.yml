@@ -55,7 +55,7 @@
 - name: Install web browser
   community.general.flatpak:
     name: 
-      - com.brave.browser
+      - com.brave.Browser
     state: latest
   become: yes
 
