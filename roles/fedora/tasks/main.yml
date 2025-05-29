@@ -28,6 +28,7 @@
       - helix
       - starship
       - stow
+      - zsh
       - zoxide
     state: latest
   become: yes
