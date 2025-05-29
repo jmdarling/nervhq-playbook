@@ -49,7 +49,7 @@
 - name: Set Zsh as default shell
   become: true
   user:
-    name: "{{ ansible_user }}"
+    name: "{{ lookup('env', 'USER') }}"
     shell: "{{ zsh_path_result.stdout }}"
 
 # Productivity
