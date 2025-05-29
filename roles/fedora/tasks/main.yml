@@ -40,6 +40,18 @@
     state: latest
   become: yes
 
+# Set default shell
+- name: Get path to zsh
+  command: which zsh
+  register: zsh_path_result
+  changed_when: false
+
+- name: Set Zsh as default shell
+  become: true
+  user:
+    name: "{{ ansible_user }}"
+    shell: "{{ zsh_path_result.stdout }}"
+
 # Productivity
 - name: Install notes manager
   community.general.flatpak:
