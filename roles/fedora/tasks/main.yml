@@ -18,6 +18,13 @@
     state: latest
   become: yes
 
+- name: Install command line packages (COPR)
+  community.general.copr:
+    name: atim/starship
+    includepkgs: starship
+    state: latest
+  become: yes
+
 - name: Install terminal
   dnf:
     name: ghostty
