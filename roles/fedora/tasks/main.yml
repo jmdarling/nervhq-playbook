@@ -73,9 +73,15 @@
   become: yes
 
 # Communication
-- name: Install communication tools
+- name: Install chat tools
   community.general.flatpak:
     name: com.discordapp.Discord
+    state: latest
+  become: yes
+
+- name: Install email client
+  community.general.flatpak:
+    name: me.proton.Mail
     state: latest
   become: yes
 
