@@ -5,6 +5,13 @@
 
 ## INSTALL SOFTWARE
 
+# COPRs
+- name: Install command line packages (COPR)
+  community.general.copr:
+    name: atim/starship
+    state: enabled
+  become: yes
+
 # Tools and utilities
 - name: Install command line packages
   ansible.builtin.dnf:
@@ -15,13 +22,6 @@
       - helix
       - stow
       - zoxide
-    state: latest
-  become: yes
-
-- name: Install command line packages (COPR)
-  community.general.copr:
-    name: atim/starship
-    includepkgs: starship
     state: latest
   become: yes
 
