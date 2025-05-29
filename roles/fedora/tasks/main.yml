@@ -29,7 +29,7 @@
   dnf:
     name: ghostty
     enablerepo: pgdev/ghostty
-    state: present
+    state: latest
   become: yes
 
 # Productivity
