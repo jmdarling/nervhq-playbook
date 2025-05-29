@@ -48,8 +48,7 @@
 - name: Install web browser
   community.general.flatpak:
     name: 
-      - org.mozilla.firefox
-      - app.zen_browser.zen
+      - com.brave.browser
     state: latest
   become: yes
 
