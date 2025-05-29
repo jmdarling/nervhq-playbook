@@ -6,9 +6,15 @@
 ## INSTALL SOFTWARE
 
 # COPRs
-- name: Install command line packages (COPR)
+- name: Enable startship COPR
   community.general.copr:
     name: atim/starship
+    state: enabled
+  become: yes
+
+- name: Enable Ghostty COPR
+  community.general.copr:
+    name: pgdev/ghostty
     state: enabled
   become: yes
 
@@ -20,6 +26,7 @@
       - fzf
       - git
       - helix
+      - starship
       - stow
       - zoxide
     state: latest
