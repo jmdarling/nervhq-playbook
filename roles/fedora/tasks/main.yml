@@ -105,6 +105,14 @@
     state: latest
   become: yes
 
+## System monitoring and resource management
+
+- name: Install performance monitor
+  ansible.builtin.dnf:
+    name: gooverlay
+    state: latest
+  become: yes
+
 ## Dotfile management
 
 - name: Apply dotfiles
