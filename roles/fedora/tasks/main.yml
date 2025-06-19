@@ -109,7 +109,7 @@
 
 - name: Install performance monitor
   ansible.builtin.dnf:
-    name: gooverlay
+    name: goverlay
     state: latest
   become: yes
 
