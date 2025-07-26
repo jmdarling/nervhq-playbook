@@ -59,9 +59,24 @@
     state: latest
   become: yes
 
+- name: Import Microsoft GPG key
+  ansible.builtin.rpm_key:
+    key: https://packages.microsoft.com/keys/microsoft.asc
+    state: present
+  become: yes
+
+- name: Add Visual Studio Code repository
+  ansible.builtin.yum_repository:
+    name: code
+    description: Visual Studio Code
+    baseurl: https://packages.microsoft.com/yumrepos/vscode
+    gpgcheck: yes
+    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+  become: yes
+
 - name: Install text editor
-  community.general.flatpak:
-    name: com.visualstudio.code
+  ansible.builtin.dnf:
+    name: code
     state: latest
   become: yes
 
