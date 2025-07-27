@@ -26,6 +26,7 @@
       - fzf
       - git
       - helix
+      - neovim
       - starship
       - stow
       - zsh
@@ -129,6 +130,20 @@
   become: yes
 
 ## Dotfile management
+
+# LazyVim configuration
+- name: Clone LazyVim starter configuration
+  ansible.builtin.git:
+    repo: https://github.com/LazyVim/starter
+    dest: ~/.config/nvim
+    force: yes
+  become: no
+
+- name: Remove LazyVim starter .git directory
+  ansible.builtin.file:
+    path: ~/.config/nvim/.git
+    state: absent
+  become: no
 
 - name: Apply dotfiles
   ansible.builtin.include_role:
