@@ -13,6 +13,7 @@
       - fzf
       - git
       - helix
+      - neovim
       - starship
       - stow
       - zoxide
@@ -89,6 +90,27 @@
   community.general.homebrew_cask:
     name: font-hack-nerd-font
     state: latest
+
+# LazyVim configuration
+- name: Check if Neovim config exists
+  ansible.builtin.stat:
+    path: ~/.config/nvim
+  register: nvim_config
+  become: no
+
+- name: Clone LazyVim starter configuration
+  ansible.builtin.git:
+    repo: https://github.com/LazyVim/starter
+    dest: ~/.config/nvim
+  become: no
+  when: not nvim_config.stat.exists
+
+- name: Remove LazyVim starter .git directory
+  ansible.builtin.file:
+    path: ~/.config/nvim/.git
+    state: absent
+  become: no
+  when: not nvim_config.stat.exists
 
 - name: Apply dotfiles
   ansible.builtin.include_role:

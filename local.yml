@@ -3,16 +3,12 @@
   connection: local
   gather_facts: yes
 
-  vars_files:
-   - become_password.yml
-  
   vars:
     os_family: "{{ ansible_os_family }}"
     role_name: >-
       {{ 'macos' if os_family == 'Darwin'
          else ('fedora' if os_family == 'RedHat'
          else 'unknown') }}
-    ansible_become_password: "{{ become_password }}"
 
   tasks:
     - name: Fail if the role is unknown
