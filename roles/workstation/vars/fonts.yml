@@ -1,0 +1,10 @@
+# Font packages
+fonts:
+  - name: fira-code-nerd-font
+    macos:
+      type: homebrew_cask
+      package: font-fira-code-nerd-font
+    fedora:
+      type: download
+      url: https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip
+      dest: ~/.local/share/fonts/

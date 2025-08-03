@@ -1,0 +1,80 @@
+# GUI applications and desktop software
+applications:
+  - name: 1password
+    macos:
+      type: homebrew_cask
+      package: 1password
+    fedora:
+      type: dnf
+      package: 1password
+      repo_setup: 1password
+  - name: ghostty
+    macos:
+      type: homebrew_cask
+      package: ghostty
+    fedora:
+      type: dnf
+      package: ghostty
+      copr: pgdev/ghostty
+  - name: obsidian
+    macos:
+      type: homebrew_cask
+      package: obsidian
+    fedora:
+      type: flatpak
+      package: md.obsidian.Obsidian
+  - name: visual-studio-code
+    macos:
+      type: homebrew_cask
+      package: visual-studio-code
+    fedora:
+      type: dnf
+      package: code
+      repo_setup: microsoft
+  - name: ticktick
+    macos:
+      type: homebrew_cask
+      package: ticktick
+    fedora:
+      type: skip  # Not available on Fedora
+  - name: rectangle
+    macos:
+      type: homebrew_cask
+      package: rectangle
+    fedora:
+      type: skip  # Window manager not needed on Linux
+  - name: brave-browser
+    macos:
+      type: homebrew_cask
+      package: brave-browser
+    fedora:
+      type: flatpak
+      package: com.brave.Browser
+  - name: firefox
+    macos:
+      type: homebrew_cask
+      package: firefox
+    fedora:
+      type: dnf
+      package: firefox
+  - name: discord
+    macos:
+      type: homebrew_cask
+      package: discord
+    fedora:
+      type: flatpak
+      package: com.discordapp.Discord
+  - name: spotify
+    macos:
+      type: homebrew_cask
+      package: spotify
+    fedora:
+      type: flatpak
+      package: com.spotify.Client
+  - name: vlc
+    macos:
+      type: homebrew_cask
+      package: vlc
+    fedora:
+      type: flatpak
+      package: org.videolan.VLC

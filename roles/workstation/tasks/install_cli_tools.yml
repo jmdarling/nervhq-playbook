@@ -1,0 +1,38 @@
+---
+- name: Install CLI tools via Homebrew (macOS)
+  community.general.homebrew:
+    name: "{{ item[current_os].package }}"
+    state: latest
+  loop: "{{ cli_tools }}"
+  when: 
+    - current_os == 'macos'
+    - item[current_os].type == 'homebrew'
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Install CLI tools via DNF (Fedora)
+  ansible.builtin.dnf:
+    name: "{{ item[current_os].package }}"
+    state: latest
+  become: yes
+  loop: "{{ cli_tools }}"
+  when: 
+    - current_os == 'fedora'
+    - item[current_os].type == 'dnf'
+    - item[current_os].copr is not defined
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Install CLI tools from COPR (Fedora)
+  ansible.builtin.dnf:
+    name: "{{ item[current_os].package }}"
+    enablerepo: "{{ item[current_os].copr }}"
+    state: latest
+  become: yes
+  loop: "{{ cli_tools }}"
+  when: 
+    - current_os == 'fedora'
+    - item[current_os].type == 'dnf'
+    - item[current_os].copr is defined
+  loop_control:
+    label: "{{ item.name }}"

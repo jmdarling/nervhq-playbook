@@ -1,0 +1,20 @@
+---
+- name: Install Fedora-specific applications via DNF
+  ansible.builtin.dnf:
+    name: "{{ item.package }}"
+    state: latest
+  become: yes
+  loop: "{{ fedora_specific }}"
+  when: item.type == 'dnf'
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Install Fedora-specific applications via Flatpak
+  community.general.flatpak:
+    name: "{{ item.package }}"
+    state: latest
+  become: yes
+  loop: "{{ fedora_specific }}"
+  when: item.type == 'flatpak'
+  loop_control:
+    label: "{{ item.name }}"

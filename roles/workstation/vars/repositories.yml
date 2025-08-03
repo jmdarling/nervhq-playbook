@@ -1,0 +1,12 @@
+# Repository and package source configurations
+repositories:
+  microsoft:
+    key_url: https://packages.microsoft.com/keys/microsoft.asc
+    repo_name: code
+    repo_description: Visual Studio Code
+    repo_baseurl: https://packages.microsoft.com/yumrepos/vscode
+  1password:
+    key_url: https://downloads.1password.com/linux/keys/1password.asc
+    repo_name: 1password
+    repo_description: 1Password
+    repo_baseurl: https://downloads.1password.com/linux/rpm/stable/$basearch

@@ -1,0 +1,44 @@
+---
+- name: Include variable files
+  include_vars: "{{ item }}"
+  with_fileglob:
+    - "../vars/*.yml"
+
+- name: Set OS-specific variables
+  set_fact:
+    current_os: "{{ 'macos' if ansible_os_family == 'Darwin' else 'fedora' if ansible_os_family == 'RedHat' else 'unknown' }}"
+
+- name: Fail if unsupported OS
+  fail:
+    msg: "Unsupported OS family: {{ ansible_os_family }}"
+  when: current_os == 'unknown'
+
+# Package manager updates
+- name: Update Homebrew (macOS)
+  community.general.homebrew:
+    update_homebrew: yes
+  become: no
+  when: current_os == 'macos'
+
+- name: Update DNF cache (Fedora)
+  ansible.builtin.dnf:
+    update_cache: yes
+  become: yes
+  when: current_os == 'fedora'
+
+# Setup repositories and COPRs
+- include_tasks: setup_repositories.yml
+  when: current_os == 'fedora'
+
+# Install software by category
+- include_tasks: install_cli_tools.yml
+- include_tasks: install_applications.yml
+- include_tasks: install_fonts.yml
+  when: current_os == 'macos'
+- include_tasks: install_fedora_specific.yml
+  when: current_os == 'fedora'
+
+# Post-installation tasks
+- include_tasks: configure_shell.yml
+- include_tasks: setup_neovim.yml
+- include_tasks: apply_dotfiles.yml

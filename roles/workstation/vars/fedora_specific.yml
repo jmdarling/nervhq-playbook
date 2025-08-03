@@ -1,0 +1,11 @@
+# Fedora-specific packages not available on other platforms
+fedora_specific:
+  - name: steam
+    package: steam
+    type: dnf
+  - name: goverlay
+    package: goverlay
+    type: dnf
+  - name: proton-mail
+    package: me.proton.Mail
+    type: flatpak

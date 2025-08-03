@@ -18,3 +18,5 @@ This is an Ansible playbook project for setting up *nix style workstations. Thes
 ## Claude's behavior
 
 Claude is NOT to sign or co-sign commits. The commits in this repository are solely the work of the author.
+
+Do NOT include a "Co-Authored-By" line.

@@ -1,0 +1,40 @@
+---
+- name: Install fonts via Homebrew Cask (macOS)
+  community.general.homebrew_cask:
+    name: "{{ item[current_os].package }}"
+    state: latest
+  loop: "{{ fonts }}"
+  when: 
+    - current_os == 'macos'
+    - item[current_os].type == 'homebrew_cask'
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create fonts directory (Fedora)
+  ansible.builtin.file:
+    path: "{{ item[current_os].dest }}"
+    state: directory
+  loop: "{{ fonts }}"
+  when:
+    - current_os == 'fedora'
+    - item[current_os].type == 'download'
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Download and extract Nerd Fonts (Fedora)
+  ansible.builtin.unarchive:
+    src: "{{ item[current_os].url }}"
+    dest: "{{ item[current_os].dest }}"
+    remote_src: yes
+    creates: "{{ item[current_os].dest }}/FiraCodeNerdFont-Regular.ttf"
+  loop: "{{ fonts }}"
+  when:
+    - current_os == 'fedora'
+    - item[current_os].type == 'download'
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Update font cache (Fedora)
+  ansible.builtin.command: fc-cache -fv
+  when: current_os == 'fedora'
+  changed_when: false

@@ -3,18 +3,6 @@
   connection: local
   gather_facts: yes
 
-  vars:
-    os_family: "{{ ansible_os_family }}"
-    role_name: >-
-      {{ 'macos' if os_family == 'Darwin'
-         else ('fedora' if os_family == 'RedHat'
-         else 'unknown') }}
-
   tasks:
-    - name: Fail if the role is unknown
-      ansible.builtin.fail:
-        msg: "Unsupported OS family: {{ os_family }}"
-      when: role_name == 'unknown'
-
     - include_role:
-        name: "{{ role_name }}"
+        name: workstation
