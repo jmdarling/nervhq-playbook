@@ -31,50 +31,17 @@ applications:
       type: dnf
       package: code
       repo_setup: microsoft
-  - name: ticktick
+  - name: Zen
     macos:
       type: homebrew_cask
-      package: ticktick
-    fedora:
-      type: skip  # Not available on Fedora
-  - name: rectangle
-    macos:
-      type: homebrew_cask
-      package: rectangle
-    fedora:
-      type: skip  # Window manager not needed on Linux
-  - name: brave-browser
-    macos:
-      type: homebrew_cask
-      package: brave-browser
+      package: zen
     fedora:
       type: flatpak
-      package: com.brave.Browser
-  - name: firefox
-    macos:
-      type: homebrew_cask
-      package: firefox
-    fedora:
-      type: dnf
-      package: firefox
+      package: app.zen_browser.zen
   - name: discord
     macos:
       type: homebrew_cask
       package: discord
     fedora:
       type: flatpak
-      package: com.discordapp.Discord
-  - name: spotify
-    macos:
-      type: homebrew_cask
-      package: spotify
-    fedora:
-      type: flatpak
-      package: com.spotify.Client
-  - name: vlc
-    macos:
-      type: homebrew_cask
-      package: vlc
-    fedora:
-      type: flatpak
-      package: org.videolan.VLC
+      package: dev.vencord.Vesktop
