@@ -6,7 +6,7 @@
 
 - name: Set OS-specific variables
   set_fact:
-    current_os: "{{ 'macos' if ansible_os_family == 'Darwin' else 'fedora' if ansible_os_family == 'RedHat' else 'unknown' }}"
+    current_os: "{{ 'macos' if ansible_os_family == 'Darwin' else 'fedora' if ansible_os_family == 'RedHat' else 'arch' if ansible_os_family == 'Archlinux' else 'unknown' }}"
 
 - name: Fail if unsupported OS
   fail:
@@ -26,6 +26,12 @@
   become: yes
   when: current_os == 'fedora'
 
+- name: Update Pacman cache (Arch Linux)
+  community.general.pacman:
+    update_cache: yes
+  become: yes
+  when: current_os == 'arch'
+
 # Setup repositories and COPRs
 - include_tasks: setup_repositories.yml
   when: current_os == 'fedora'
@@ -35,8 +41,6 @@
 - include_tasks: install_applications.yml
 - include_tasks: install_fonts.yml
   when: current_os == 'macos'
-- include_tasks: install_fedora_specific.yml
-  when: current_os == 'fedora'
 
 # Post-installation tasks
 - include_tasks: configure_shell.yml

@@ -36,3 +36,27 @@
     - item[current_os].copr is defined
   loop_control:
     label: "{{ item.name }}"
+
+- name: Install CLI tools via Pacman (Arch Linux)
+  community.general.pacman:
+    name: "{{ item[current_os].package }}"
+    state: latest
+  become: yes
+  loop: "{{ cli_tools }}"
+  when: 
+    - current_os == 'arch'
+    - item[current_os].type == 'pacman'
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Install CLI tools via AUR (Arch Linux)
+  kewlfft.aur.aur:
+    name: "{{ item[current_os].package }}"
+    state: latest
+  become: no
+  loop: "{{ cli_tools }}"
+  when: 
+    - current_os == 'arch'
+    - item[current_os].type == 'aur'
+  loop_control:
+    label: "{{ item.name }}"

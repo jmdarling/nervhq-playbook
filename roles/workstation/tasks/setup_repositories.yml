@@ -12,11 +12,6 @@
     state: enabled
   become: yes
 
-- name: Enable atuin COPR
-  community.general.copr:
-    name: elbenfreund/atuin
-    state: enabled
-  become: yes
 
 # Setup Microsoft repository for VS Code
 - name: Import Microsoft GPG key
@@ -32,20 +27,4 @@
     baseurl: "{{ repositories.microsoft.repo_baseurl }}"
     gpgcheck: yes
     gpgkey: "{{ repositories.microsoft.key_url }}"
-  become: yes
-
-# Setup 1Password repository
-- name: Import 1Password GPG key
-  ansible.builtin.rpm_key:
-    key: "{{ repositories.1password.key_url }}"
-    state: present
-  become: yes
-
-- name: Add 1Password repository
-  ansible.builtin.yum_repository:
-    name: "{{ repositories.1password.repo_name }}"
-    description: "{{ repositories.1password.repo_description }}"
-    baseurl: "{{ repositories.1password.repo_baseurl }}"
-    gpgcheck: yes
-    gpgkey: "{{ repositories.1password.key_url }}"
   become: yes

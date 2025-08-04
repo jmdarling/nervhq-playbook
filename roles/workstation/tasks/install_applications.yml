@@ -63,3 +63,39 @@
     - item[current_os].type == 'flatpak'
   loop_control:
     label: "{{ item.name }}"
+
+- name: Install applications via Pacman (Arch Linux)
+  community.general.pacman:
+    name: "{{ item[current_os].package }}"
+    state: latest
+  become: yes
+  loop: "{{ applications }}"
+  when: 
+    - current_os == 'arch'
+    - item[current_os].type == 'pacman'
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Install applications via AUR (Arch Linux)
+  kewlfft.aur.aur:
+    name: "{{ item[current_os].package }}"
+    state: latest
+  become: no
+  loop: "{{ applications }}"
+  when: 
+    - current_os == 'arch'
+    - item[current_os].type == 'aur'
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Install applications via Flatpak (Arch Linux)
+  community.general.flatpak:
+    name: "{{ item[current_os].package }}"
+    state: latest
+  become: yes
+  loop: "{{ applications }}"
+  when: 
+    - current_os == 'arch'
+    - item[current_os].type == 'flatpak'
+  loop_control:
+    label: "{{ item.name }}"

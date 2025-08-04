@@ -12,10 +12,14 @@
 #     type: dnf                         # Required: Package manager type
 #     package: package-name             # Required: Package name in DNF
 #     copr: copr-name                   # Optional: COPR repository to enable
+#   arch:                               # Optional: Arch Linux-specific configuration
+#     type: pacman|aur                  # Required: Package manager type
+#     package: package-name             # Required: Package name
 #
 # Supported package manager types:
 # - macos: homebrew (installs via Homebrew), system (already installed)
 # - fedora: dnf
+# - arch: pacman, aur
 #
 # Optional repository configuration:
 # - copr: COPR repository in format "user/repo"
@@ -34,13 +38,18 @@ cli_tools:
     fedora:
       type: dnf
       package: atuin
-      copr: elbenfreund/atuin
+    arch:
+      type: pacman
+      package: atuin
   - name: fastfetch
     macos:
       type: homebrew
       package: fastfetch
     fedora:
       type: dnf
+      package: fastfetch
+    arch:
+      type: pacman
       package: fastfetch
   - name: fzf
     macos:
@@ -49,12 +58,18 @@ cli_tools:
     fedora:
       type: dnf
       package: fzf
+    arch:
+      type: pacman
+      package: fzf
   - name: git
     macos:
       type: homebrew
       package: git
     fedora:
       type: dnf
+      package: git
+    arch:
+      type: pacman
       package: git
   - name: helix
     macos:
@@ -63,12 +78,18 @@ cli_tools:
     fedora:
       type: dnf
       package: helix
+    arch:
+      type: pacman
+      package: helix
   - name: neovim
     macos:
       type: homebrew
       package: neovim
     fedora:
       type: dnf
+      package: neovim
+    arch:
+      type: pacman
       package: neovim
   - name: starship
     macos:
@@ -78,12 +99,18 @@ cli_tools:
       type: dnf
       package: starship
       copr: atim/starship
+    arch:
+      type: pacman
+      package: starship
   - name: stow
     macos:
       type: homebrew
       package: stow
     fedora:
       type: dnf
+      package: stow
+    arch:
+      type: pacman
       package: stow
   - name: zoxide
     macos:
@@ -92,9 +119,15 @@ cli_tools:
     fedora:
       type: dnf
       package: zoxide
+    arch:
+      type: pacman
+      package: zoxide
   - name: zsh
     macos:
       type: system  # Already installed on macOS
     fedora:
       type: dnf
+      package: zsh
+    arch:
+      type: pacman
       package: zsh

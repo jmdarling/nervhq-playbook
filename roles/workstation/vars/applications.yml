@@ -13,10 +13,14 @@
 #     package: package-name             # Required: Package name in the manager
 #     repo_setup: repo-name             # Optional: Repository setup task name
 #     copr: copr-name                   # Optional: COPR repository to enable
+#   arch:                               # Optional: Arch Linux-specific configuration
+#     type: pacman|aur|flatpak          # Required: Package manager type
+#     package: package-name             # Required: Package name
 #
 # Supported package manager types:
 # - macos: homebrew_cask
 # - fedora: dnf, flatpak
+# - arch: pacman, aur, flatpak
 #
 # Optional repository configuration:
 # - repo_setup: References a task in setup_repositories.yml
@@ -26,14 +30,6 @@
 # Applications can be defined for only one platform by omitting the other platform section.
 
 applications:
-  - name: 1password
-    macos:
-      type: homebrew_cask
-      package: 1password
-    fedora:
-      type: dnf
-      package: 1password
-      repo_setup: 1password
   - name: ghostty
     macos:
       type: homebrew_cask
@@ -42,11 +38,17 @@ applications:
       type: dnf
       package: ghostty
       copr: pgdev/ghostty
+    arch:
+      type: aur
+      package: ghostty
   - name: obsidian
     macos:
       type: homebrew_cask
       package: obsidian
     fedora:
+      type: flatpak
+      package: md.obsidian.Obsidian
+    arch:
       type: flatpak
       package: md.obsidian.Obsidian
   - name: visual-studio-code
@@ -57,6 +59,9 @@ applications:
       type: dnf
       package: code
       repo_setup: microsoft
+    arch:
+      type: aur
+      package: visual-studio-code-bin
   - name: Zen
     macos:
       type: homebrew_cask
@@ -64,6 +69,9 @@ applications:
     fedora:
       type: flatpak
       package: app.zen_browser.zen
+    arch:
+      type: aur
+      package: zen-browser-bin
   - name: discord
     macos:
       type: homebrew_cask
@@ -71,15 +79,27 @@ applications:
     fedora:
       type: flatpak
       package: dev.vencord.Vesktop
+    arch:
+      type: aur
+      package: vesktop-bin
   - name: steam
     fedora:
       type: dnf
+      package: steam
+    arch:
+      type: pacman
       package: steam
   - name: goverlay
     fedora:
       type: dnf
       package: goverlay
+    arch:
+      type: aur
+      package: goverlay-bin
   - name: proton-mail
     fedora:
+      type: flatpak
+      package: me.proton.Mail
+    arch:
       type: flatpak
       package: me.proton.Mail
