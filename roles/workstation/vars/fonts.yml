@@ -1,4 +1,29 @@
 # Font packages
+#
+# Font Configuration Format:
+#
+# Each font entry supports the following structure:
+#
+# - name: font-name                     # Required: Display name for the font
+#   macos:                              # Optional: macOS-specific configuration
+#     type: homebrew_cask               # Required: Package manager type
+#     package: package-name             # Required: Font package name (usually prefixed with 'font-')
+#   fedora:                             # Optional: Fedora-specific configuration  
+#     type: download                    # Required: Installation method
+#     url: download-url                 # Required: Direct download URL for font files
+#     dest: destination-path            # Required: Local installation directory
+#
+# Supported installation types:
+# - macos: homebrew_cask (installs via Homebrew Cask font tap)
+# - fedora: download (downloads and extracts font files)
+#
+# Font naming conventions:
+# - macOS packages typically use 'font-' prefix (e.g., font-fira-code-nerd-font)
+# - Fedora uses direct downloads, typically from GitHub releases or font websites
+#
+# Installation destinations:
+# - Fedora fonts should install to ~/.local/share/fonts/ for user-specific fonts
+
 fonts:
   - name: fira-code-nerd-font
     macos:

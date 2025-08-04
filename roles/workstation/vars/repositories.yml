@@ -1,4 +1,33 @@
 # Repository and package source configurations
+#
+# Repository Configuration Format:
+#
+# Each repository entry supports the following structure:
+#
+# repository-name:                      # Required: Unique identifier for the repository
+#   key_url: signing-key-url            # Required: URL to the GPG signing key
+#   repo_name: repository-id            # Required: Short name/ID for the repository
+#   repo_description: description       # Required: Human-readable description
+#   repo_baseurl: repository-url        # Required: Base URL for the repository
+#
+# Repository configuration details:
+# - repository-name: Used as a reference in applications.yml via 'repo_setup' field
+# - key_url: GPG key URL for package verification and security
+# - repo_name: Internal repository identifier used by the package manager
+# - repo_description: Descriptive name shown in repository listings
+# - repo_baseurl: Full URL to the repository, may include variables like $basearch
+#
+# Usage:
+# Repositories defined here are referenced in applications.yml using the 'repo_setup'
+# field, which triggers the repository setup before package installation.
+#
+# Example application reference:
+# - name: example-app
+#   fedora:
+#     type: dnf
+#     package: example-package
+#     repo_setup: repository-name  # References the key from this file
+
 repositories:
   microsoft:
     key_url: https://packages.microsoft.com/keys/microsoft.asc
