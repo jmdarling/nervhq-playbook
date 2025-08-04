@@ -7,14 +7,13 @@ An Ansible playbook for automated personal workstation setup on Fedora Linux and
 This playbook automates the configuration of development environments by:
 - **Cross-platform support**: Automatically detects OS (Darwin/macOS vs RedHat/Fedora) and runs the appropriate role
 - **Software installation**: Installs development tools, productivity apps, and entertainment software via native package managers
-- **Dotfiles management**: Clones and applies personal dotfiles from GitHub using GNU Stow
 - **Shell configuration**: Sets Zsh as the default shell on Fedora
 
 ## Prerequisites
 
 - **Ansible** installed on the target machine
 - **Ansible Vault password** configured in `~/.ansible-vault-password`
-- **Internet connection** for downloading packages and dotfiles
+- **Internet connection** for downloading packages
 - **sudo privileges** for package installation
 
 ### Platform-specific requirements:
@@ -53,7 +52,6 @@ This playbook automates the configuration of development environments by:
 - **git** - Version control
 - **helix** - Text editor
 - **starship** - Shell prompt
-- **stow** - Dotfiles manager
 - **zsh** - Shell (set as default on Fedora)
 - **zoxide** - Smart directory navigation
 
@@ -91,8 +89,6 @@ nervhq-playbook/
 ├── local.yml               # Main playbook
 ├── become_password.yml     # Encrypted sudo password
 └── roles/
-    ├── dotfiles/           # Dotfiles management role
-    │   └── tasks/main.yml
     ├── fedora/            # Fedora-specific tasks
     │   └── tasks/main.yml
     └── macos/             # macOS-specific tasks
@@ -115,18 +111,12 @@ Add the following content:
 become_password: "your_sudo_password"
 ```
 
-### Dotfiles
-The playbook clones dotfiles from `https://github.com/jmdarling/dotfiles.git`. Update the repository URL in `roles/dotfiles/tasks/main.yml` if you want to use your own dotfiles.
-
 ## Customization
 
 ### Adding Software
 To add new software:
 1. Edit the appropriate role file (`roles/fedora/tasks/main.yml` or `roles/macos/tasks/main.yml`)
 2. Add new tasks using the appropriate package manager (DNF, Homebrew, Flatpak)
-
-### Modifying Dotfiles
-Update the repository URL in `roles/dotfiles/tasks/main.yml` to point to your own dotfiles repository.
 
 ## Troubleshooting
 

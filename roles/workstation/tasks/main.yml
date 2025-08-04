@@ -41,4 +41,3 @@
 # Post-installation tasks
 - include_tasks: configure_shell.yml
 - include_tasks: setup_neovim.yml
-- include_tasks: apply_dotfiles.yml

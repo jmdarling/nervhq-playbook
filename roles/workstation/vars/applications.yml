@@ -45,3 +45,15 @@ applications:
     fedora:
       type: flatpak
       package: dev.vencord.Vesktop
+  - name: steam
+    fedora:
+      type: dnf
+      package: steam
+  - name: goverlay
+    fedora:
+      type: dnf
+      package: goverlay
+  - name: proton-mail
+    fedora:
+      type: flatpak
+      package: me.proton.Mail
