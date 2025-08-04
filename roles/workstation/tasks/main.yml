@@ -14,34 +14,24 @@
   when: current_os == 'unknown'
 
 # Package manager updates
-- name: Update Homebrew (macOS)
-  community.general.homebrew:
-    update_homebrew: yes
-  become: no
-  when: current_os == 'macos'
-
-- name: Update DNF cache (Fedora)
-  ansible.builtin.dnf:
-    update_cache: yes
-  become: yes
-  when: current_os == 'fedora'
-
-- name: Update Pacman cache (Arch Linux)
-  community.general.pacman:
-    update_cache: yes
-  become: yes
-  when: current_os == 'arch'
+- include_tasks: update_package_managers.yml
 
 # Setup repositories and COPRs
 - include_tasks: setup_repositories.yml
   when: current_os == 'fedora'
 
 # Install software by category
-- include_tasks: install_cli_tools.yml
-- include_tasks: install_applications.yml
+- include_tasks: install_packages.yml
+  vars:
+    packages: "{{ cli_tools }}"
+    package_type: "CLI tools"
+
+- include_tasks: install_packages.yml
+  vars:
+    packages: "{{ applications }}"
+    package_type: "applications"
 - include_tasks: install_fonts.yml
   when: current_os == 'macos'
 
 # Post-installation tasks
 - include_tasks: configure_shell.yml
-- include_tasks: setup_neovim.yml

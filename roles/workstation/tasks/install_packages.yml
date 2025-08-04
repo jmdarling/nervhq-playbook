@@ -1,22 +1,36 @@
 ---
-- name: Install applications via Homebrew Cask (macOS)
+# Generic package installation tasks
+# Accepts variables: packages (list), package_type (string for task naming)
+
+- name: "Install {{ package_type }} via Homebrew (macOS)"
+  community.general.homebrew:
+    name: "{{ item[current_os].package }}"
+    state: latest
+  loop: "{{ packages }}"
+  when: 
+    - current_os == 'macos'
+    - item[current_os].type == 'homebrew'
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: "Install {{ package_type }} via Homebrew Cask (macOS)"
   community.general.homebrew_cask:
     name: "{{ item[current_os].package }}"
     state: latest
     greedy: yes
-  loop: "{{ applications }}"
+  loop: "{{ packages }}"
   when: 
     - current_os == 'macos'
     - item[current_os].type == 'homebrew_cask'
   loop_control:
     label: "{{ item.name }}"
 
-- name: Install applications via DNF (Fedora)
+- name: "Install {{ package_type }} via DNF (Fedora)"
   ansible.builtin.dnf:
     name: "{{ item[current_os].package }}"
     state: latest
   become: yes
-  loop: "{{ applications }}"
+  loop: "{{ packages }}"
   when: 
     - current_os == 'fedora'
     - item[current_os].type == 'dnf'
@@ -25,13 +39,13 @@
   loop_control:
     label: "{{ item.name }}"
 
-- name: Install applications from COPR (Fedora)
+- name: "Install {{ package_type }} from COPR (Fedora)"
   ansible.builtin.dnf:
     name: "{{ item[current_os].package }}"
     enablerepo: "{{ item[current_os].copr }}"
     state: latest
   become: yes
-  loop: "{{ applications }}"
+  loop: "{{ packages }}"
   when: 
     - current_os == 'fedora'
     - item[current_os].type == 'dnf'
@@ -39,12 +53,12 @@
   loop_control:
     label: "{{ item.name }}"
 
-- name: Install applications with repository setup (Fedora)
+- name: "Install {{ package_type }} with repository setup (Fedora)"
   ansible.builtin.dnf:
     name: "{{ item[current_os].package }}"
     state: latest
   become: yes
-  loop: "{{ applications }}"
+  loop: "{{ packages }}"
   when: 
     - current_os == 'fedora'
     - item[current_os].type == 'dnf'
@@ -52,48 +66,48 @@
   loop_control:
     label: "{{ item.name }}"
 
-- name: Install applications via Flatpak (Fedora)
+- name: "Install {{ package_type }} via Flatpak (Fedora)"
   community.general.flatpak:
     name: "{{ item[current_os].package }}"
     state: latest
   become: yes
-  loop: "{{ applications }}"
+  loop: "{{ packages }}"
   when: 
     - current_os == 'fedora'
     - item[current_os].type == 'flatpak'
   loop_control:
     label: "{{ item.name }}"
 
-- name: Install applications via Pacman (Arch Linux)
+- name: "Install {{ package_type }} via Pacman (Arch Linux)"
   community.general.pacman:
     name: "{{ item[current_os].package }}"
     state: latest
   become: yes
-  loop: "{{ applications }}"
+  loop: "{{ packages }}"
   when: 
     - current_os == 'arch'
     - item[current_os].type == 'pacman'
   loop_control:
     label: "{{ item.name }}"
 
-- name: Install applications via AUR (Arch Linux)
+- name: "Install {{ package_type }} via AUR (Arch Linux)"
   kewlfft.aur.aur:
     name: "{{ item[current_os].package }}"
     state: latest
   become: no
-  loop: "{{ applications }}"
+  loop: "{{ packages }}"
   when: 
     - current_os == 'arch'
     - item[current_os].type == 'aur'
   loop_control:
     label: "{{ item.name }}"
 
-- name: Install applications via Flatpak (Arch Linux)
+- name: "Install {{ package_type }} via Flatpak (Arch Linux)"
   community.general.flatpak:
     name: "{{ item[current_os].package }}"
     state: latest
   become: yes
-  loop: "{{ applications }}"
+  loop: "{{ packages }}"
   when: 
     - current_os == 'arch'
     - item[current_os].type == 'flatpak'

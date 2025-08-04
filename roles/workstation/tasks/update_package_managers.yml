@@ -1,0 +1,20 @@
+---
+# Update package managers and caches
+
+- name: Update Homebrew (macOS)
+  community.general.homebrew:
+    update_homebrew: yes
+  become: no
+  when: current_os == 'macos'
+
+- name: Update DNF cache (Fedora)
+  ansible.builtin.dnf:
+    update_cache: yes
+  become: yes
+  when: current_os == 'fedora'
+
+- name: Update Pacman cache (Arch Linux)
+  community.general.pacman:
+    update_cache: yes
+  become: yes
+  when: current_os == 'arch'
