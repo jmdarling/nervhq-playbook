@@ -1,4 +1,30 @@
 # GUI applications and desktop software
+#
+# Application Configuration Format:
+#
+# Each application entry supports the following structure:
+#
+# - name: application-name               # Required: Display name for the application
+#   macos:                              # Optional: macOS-specific configuration
+#     type: homebrew_cask               # Required: Package manager type
+#     package: package-name             # Required: Package name in the manager
+#   fedora:                             # Optional: Fedora-specific configuration  
+#     type: dnf|flatpak                 # Required: Package manager type
+#     package: package-name             # Required: Package name in the manager
+#     repo_setup: repo-name             # Optional: Repository setup task name
+#     copr: copr-name                   # Optional: COPR repository to enable
+#
+# Supported package manager types:
+# - macos: homebrew_cask
+# - fedora: dnf, flatpak
+#
+# Optional repository configuration:
+# - repo_setup: References a task in setup_repositories.yml
+# - copr: COPR repository in format "user/repo"
+#
+# Platform-specific applications:
+# Applications can be defined for only one platform by omitting the other platform section.
+
 applications:
   - name: 1password
     macos:
