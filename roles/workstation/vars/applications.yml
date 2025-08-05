@@ -62,16 +62,16 @@ applications:
     arch:
       type: aur
       package: visual-studio-code-bin
-  - name: Zen
+  - name: Firefox
     macos:
       type: homebrew_cask
-      package: zen
+      package: firefox
     fedora:
       type: flatpak
-      package: app.zen_browser.zen
+      package: org.mozilla.firefox
     arch:
-      type: aur
-      package: zen-browser-bin
+      type: flatpak
+      package: org.mozilla.firefox
   - name: discord
     macos:
       type: homebrew_cask
