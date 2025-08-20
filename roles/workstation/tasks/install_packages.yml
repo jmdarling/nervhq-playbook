@@ -91,9 +91,10 @@
     label: "{{ item.name }}"
 
 - name: "Install {{ package_type }} via AUR (Arch Linux)"
-  kewlfft.aur.aur:
+  community.general.pacman:
     name: "{{ item[current_os].package }}"
     state: latest
+    executable: paru
   become: no
   loop: "{{ packages }}"
   when: 
