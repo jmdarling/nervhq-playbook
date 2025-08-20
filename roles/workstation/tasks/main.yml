@@ -30,8 +30,8 @@
   vars:
     packages: "{{ applications }}"
     package_type: "applications"
+
 - include_tasks: install_fonts.yml
-  when: current_os == 'macos'
 
 # Post-installation tasks
 - include_tasks: configure_shell.yml
