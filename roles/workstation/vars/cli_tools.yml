@@ -71,16 +71,6 @@ cli_tools:
     arch:
       type: pacman
       package: git
-  - name: helix
-    macos:
-      type: homebrew
-      package: helix
-    fedora:
-      type: dnf
-      package: helix
-    arch:
-      type: pacman
-      package: helix
   - name: neovim
     macos:
       type: homebrew
