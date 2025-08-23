@@ -1,4 +1,4 @@
-- name: Install applications via brew
+- name: Install applications via Homebrew
   loop: "{{ applications }}"
   when:
     - item.macos is defined

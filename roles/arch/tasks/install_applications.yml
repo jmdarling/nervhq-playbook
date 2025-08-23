@@ -1,13 +1,24 @@
-- name: Install applications via native package manager
+- name: Install applications via Pacman
   loop: "{{ applications }}"
   when:
     - item.arch is defined
-    - item.arch.source in ['pacman', 'paru'] # Note - 'paru' is unlikely to properly function at this time.
+    - item.arch.source == 'pacman'
   community.general.pacman:
-    executable: "/usr/bin/{{ item.arch.source }}"
     name: "{{ item.arch.name | default(item.name) }}"
-    state: present # Arch and AUR packages will be updated holistically in a separate task.
+    state: present # Arch Pacman packages will be updated holistically in a separate task.
   become: yes
+
+- name: Install applications via Paru
+  loop: "{{ applications }}"
+  when:
+    - item.arch is defined
+    - item.arch.source == 'paru'
+  kewlfft.aur.aur:
+    use: paru
+    name: "{{ item.arch.name | default(item.name) }}"
+    state: present # Paru packages will be updated holistically in a separate task.
+  become: yes
+  become_user: "{{ ansible_user_id }}"
 
 - name: Install applications via Flatpak
   loop: "{{ applications }}"

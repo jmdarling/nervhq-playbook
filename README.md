@@ -1,136 +1,67 @@
 # nervhq-playbook
 
-An Ansible playbook for automated personal workstation setup on Fedora Linux and macOS.
+An Ansible playbook for automated workstation setup.
 
-## Overview
-
-This playbook automates the configuration of development environments by:
-- **Cross-platform support**: Automatically detects OS (Darwin/macOS vs RedHat/Fedora) and runs the appropriate role
-- **Software installation**: Installs development tools, productivity apps, and entertainment software via native package managers
-- **Shell configuration**: Sets Zsh as the default shell on Fedora
+_Note: as currently implemented, this playbook is meant to be cloned and run locally._
 
 ## Prerequisites
 
-- **Ansible** installed on the target machine
-- **Ansible Vault password** configured in `~/.ansible-vault-password`
-- **Internet connection** for downloading packages
-- **sudo privileges** for package installation
+### Package manager
 
-### Platform-specific requirements:
-- **Fedora**: DNF package manager, Flatpak support
-- **macOS**: Homebrew installed
+#### Arch
 
-## Quick Start
+This playbook leverages Pacman for the majority of command line tools, Flatpak for the majority of desktop applications, and Paru to install from the AUR where the previous two do not have coverage.
 
-1. Clone this repository:
-   ```bash
-   git clone <repository-url>
-   cd nervhq-playbook
-   ```
+##### Flatpak
 
-2. Set up your vault password:
-   ```bash
-   echo "your_vault_password" > ~/.ansible-vault-password
-   chmod 600 ~/.ansible-vault-password
-   ```
+Installation guide: [docs.nervhq.io](https://docs.nervhq.io/projects/homelab/NERV-HQ/Arch+workstation+setup/Steps/1.1+-+Install+Flatpak+-+Desktop+application+package+manager)
 
-3. Configure your become password in `become_password.yml`:
-   ```bash
-   ansible-vault edit become_password.yml
-   ```
+##### Paru
 
-4. Run the playbook:
-   ```bash
-   ansible-playbook local.yml
-   ```
+Installation guide: [docs.nervhq.io](<https://docs.nervhq.io/projects/homelab/NERV-HQ/Arch+workstation+setup/Steps/1.2+-+Install+Paru+-+Arch+User+Repository+(AUR)+helper>)
 
-## Software Installed
+#### MacOS
 
-### Command Line Tools
-- **fastfetch** - System information tool
-- **fzf** - Fuzzy finder
-- **git** - Version control
-- **helix** - Text editor
-- **starship** - Shell prompt
-- **zsh** - Shell (set as default on Fedora)
-- **zoxide** - Smart directory navigation
+This playbook leverages Homebrew for the vast majority of command line tools and desktop applications.
 
-### Development Tools
-- **Visual Studio Code** - Code editor
-- **Ghostty** - Terminal emulator
+##### Homebrew
 
-### Productivity
-- **Obsidian** - Note-taking application
-- **1Password** - Password manager (macOS only)
-- **Rectangle** - Window manager (macOS only)
-- **TickTick** - Task manager (macOS only)
+Installation guide: [docs.nervhq.io](https://docs.nervhq.io/projects/homelab/NERV-HQ/MacOS+workstation+setup/Steps/1.1+-+Install+Homebrew+-+Package+manager)
 
-### Web Browsers
-- **Brave Browser**
-- **Firefox** (macOS only)
+### Ansible
 
-### Communication
-- **Discord** - Chat application
-- **Proton Mail** - Email client (Fedora only)
+As this playbook is meant to be cloned and run locally, the full Ansible package should be installed.
 
-### Entertainment
-- **Spotify** - Music streaming
-- **VLC** - Video player
-- **Steam** - Gaming platform (Fedora only)
+#### Arch
 
-### System Tools
-- **goverlay** - Performance monitoring overlay (Fedora only)
+Installation guide: [docs.nervhq.io](https://docs.nervhq.io/projects/homelab/NERV-HQ/Arch+workstation+setup/Steps/1.3+-+Install+Ansible+-+configuration+manager)
 
-## Repository Structure
+#### MacOS
 
-```
-nervhq-playbook/
-├── ansible.cfg              # Ansible configuration
-├── local.yml               # Main playbook
-├── become_password.yml     # Encrypted sudo password
-└── roles/
-    ├── fedora/            # Fedora-specific tasks
-    │   └── tasks/main.yml
-    └── macos/             # macOS-specific tasks
-        └── tasks/main.yml
+Installation guide: [docs.nervhq.io](https://docs.nervhq.io/projects/homelab/NERV-HQ/MacOS+workstation+setup/Steps/1.2+-+Install+Ansible+-+Configuration+manager)
+
+### Ansible Galaxy requirements
+
+This playbook leverages collections and roles from [Ansible Galaxy](https://galaxy.ansible.com/ui/) that will need to be installed.
+
+```sh
+ansible-galaxy collection install -r requirements.yml
 ```
 
-## Configuration
+## Using
 
-### Vault Password
-The playbook uses Ansible Vault to encrypt sensitive data. Configure your vault password in `~/.ansible-vault-password` as specified in `ansible.cfg`.
+Each operating system has its own discrete playbook that should be run.
 
-### Become Password
-Your sudo password should be encrypted in `become_password.yml`:
-```bash
-ansible-vault edit become_password.yml
+_Note: You will be asked to provide a "BECOME password" when executing the playbook - this is your `sudo` password._
+
+### Arch
+
+```sh
+ansible-playbook local-arch.yml
 ```
 
-Add the following content:
-```yaml
-become_password: "your_sudo_password"
+### MacOS
+
+```sh
+ansible-playbook local-macos.yml
 ```
-
-## Customization
-
-### Adding Software
-To add new software:
-1. Edit the appropriate role file (`roles/fedora/tasks/main.yml` or `roles/macos/tasks/main.yml`)
-2. Add new tasks using the appropriate package manager (DNF, Homebrew, Flatpak)
-
-## Troubleshooting
-
-### Common Issues
-- **Permission denied**: Ensure your user has sudo privileges and the become password is correct
-- **Package not found**: Some packages may not be available in all repositories; check package names and availability
-- **Flatpak errors**: Ensure Flatpak is properly configured and Flathub is added as a remote
-
-### Debugging
-Run with verbose output:
-```bash
-ansible-playbook local.yml -vv
-```
-
-## License
-
-This playbook is for personal use. Modify as needed for your own setup.

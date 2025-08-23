@@ -1,13 +1,24 @@
-- name: Install command line tools via package manager
+- name: Install command line tools via Pacman
   loop: "{{ cli_tools }}"
   when:
     - item.arch is defined
-    - item.arch.source in ['pacman', 'paru']
+    - item.arch.source == 'pacman'
   community.general.pacman:
-    executable: "/usr/bin/{{ item.arch.source }}"
     name: "{{ item.arch.name | default(item.name) }}"
     state: present
-  become: "{{ item.arch.source == 'paru' | ternary('no', 'yes') }}"
+  become: yes
+
+- name: Install command line tools via Paru
+  loop: "{{ cli_tools }}"
+  when:
+    - item.arch is defined
+    - item.arch.source == 'paru'
+  kewlfft.aur.aur:
+    use: paru
+    name: "{{ item.arch.name | default(item.name) }}"
+    state: present # Paru packages will be updated holistically in a separate task.
+  become: yes
+  become_user: "{{ ansible_user_id }}"
 
 - name: Install command line tools via script
   loop: "{{ cli_tools }}"

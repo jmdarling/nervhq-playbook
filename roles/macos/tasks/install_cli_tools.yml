@@ -1,4 +1,4 @@
-- name: Install command line tools via package manager
+- name: Install command line tools via Homebrew
   loop: "{{ cli_tools }}"
   when:
     - item.macos is defined
