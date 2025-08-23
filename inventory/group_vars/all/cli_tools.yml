@@ -1,0 +1,33 @@
+cli_tools:
+  # Core Development Tools
+  - name: git
+    macos:
+      source: brew
+  - name: neovim
+    macos:
+      source: brew
+
+  # Shell & Terminal Enhancement
+  - name: zsh
+  - name: starship
+    macos:
+      source: brew
+  - name: atuin
+    macos:
+      source: brew
+
+  # System Information
+  - name: fastfetch
+    macos:
+      source: brew
+
+  # File & Directory Tools
+  - name: fzf
+    macos:
+      source: brew
+  - name: stow
+    macos:
+      source: brew
+  - name: zoxide
+    macos:
+      source: brew

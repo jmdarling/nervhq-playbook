@@ -8,7 +8,7 @@
 #   macos:                              # Optional: macOS-specific configuration
 #     type: homebrew|system             # Required: Package manager type
 #     package: package-name             # Required for homebrew, omit for system
-#   fedora:                             # Optional: Fedora-specific configuration  
+#   fedora:                             # Optional: Fedora-specific configuration
 #     type: dnf                         # Required: Package manager type
 #     package: package-name             # Required: Package name in DNF
 #     copr: copr-name                   # Optional: COPR repository to enable
@@ -114,7 +114,7 @@ cli_tools:
       package: zoxide
   - name: zsh
     macos:
-      type: system  # Already installed on macOS
+      type: system # Already installed on macOS
     fedora:
       type: dnf
       package: zsh

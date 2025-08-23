@@ -1,0 +1,9 @@
+- name: Install command line tools via brew
+  loop: "{{ cli_tools }}"
+  when:
+    - item.macos is defined
+    - item.macos.source == 'brew'
+  community.general.homebrew:
+    name: "{{ item.macos.name | default(item.name) }}"
+    state: latest
+  become: no

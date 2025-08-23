@@ -1,0 +1,8 @@
+# Update package manager.
+- include_tasks: update_package_manager.yml
+
+# Install CLI tools.
+- include_tasks: install_cli_tools.yml
+
+# Install applications.
+- include_tasks: install_applications.yml

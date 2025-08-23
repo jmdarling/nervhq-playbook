@@ -1,0 +1,10 @@
+- name: Install applications via brew
+  loop: "{{ applications }}"
+  when:
+    - item.macos is defined
+    - item.macos.source == 'brew'
+  community.general.homebrew_cask:
+    name: "{{ item.macos.name | default(item.name) }}"
+    state: latest
+    greedy: yes
+  become: no

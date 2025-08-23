@@ -1,0 +1,48 @@
+applications:
+  # Password Management
+  - name: 1password
+    macos:
+      source: brew
+
+  # Window Management
+  - name: nikitabobko/tap/aerospace
+    macos:
+      source: brew
+
+  # Development Tools
+  - name: balenaetcher
+    macos:
+      source: brew
+  - name: visual-studio-code
+    macos:
+      source: brew
+  - name: ghostty
+    macos:
+      source: brew
+
+  # Web Browsers
+  - name: zen
+    macos:
+      source: brew
+
+  # Productivity
+  - name: obsidian
+    macos:
+      source: brew
+
+  # Communication
+  - name: discord
+    macos:
+      source: brew
+
+  # Proton Services
+  - name: proton-drive
+    macos:
+      source: brew
+  - name: proton-mail
+    macos:
+      source: brew
+
+  # Gaming
+  - name: goverlay
+  - name: steam
