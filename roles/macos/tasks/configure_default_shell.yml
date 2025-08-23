@@ -5,7 +5,7 @@
   changed_when: false
 
 - name: Set Zsh as default shell
-  become: yes
+  become: true
   user:
     name: "{{ ansible_user_id }}"
     shell: "{{ zsh_path_result.stdout }}"

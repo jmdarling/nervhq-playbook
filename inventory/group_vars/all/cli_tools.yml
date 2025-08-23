@@ -54,7 +54,7 @@ cli_tools:
       source: paru
       name: claude-code
 
-  # Node.js Tools
+  # Dev tools
   - name: volta
     arch:
       source: script
@@ -64,3 +64,9 @@ cli_tools:
       source: script
       url: https://get.volta.sh
       creates: "{{ ansible_env.HOME }}/.volta"
+  - name: ansible-lint
+    arch:
+      source: pacman
+      name: ansible-lint
+    macos:
+      source: brew

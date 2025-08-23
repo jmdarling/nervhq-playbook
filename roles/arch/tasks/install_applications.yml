@@ -6,7 +6,7 @@
   community.general.pacman:
     name: "{{ item.arch.name | default(item.name) }}"
     state: present # Pacman packages will be updated holistically in a separate task.
-  become: yes
+  become: true
 
 - name: Install applications via Paru
   loop: "{{ applications }}"
@@ -17,7 +17,7 @@
     use: paru
     name: "{{ item.arch.name | default(item.name) }}"
     state: present # Paru packages will be updated holistically in a separate task.
-  become: yes
+  become: true
   become_user: aur_builder
 
 - name: Install applications via Flatpak
@@ -28,4 +28,4 @@
   community.general.flatpak:
     name: "{{ item.arch.name | default(item.name) }}"
     state: latest # Flatpak packages will be updated piecemeal.
-  become: no
+  become: false
