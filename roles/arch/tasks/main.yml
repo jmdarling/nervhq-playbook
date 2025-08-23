@@ -1,8 +1,11 @@
 # Update package manager.
-- include_tasks: update_package_manager.yml
+- include_tasks: update_package_manager_cache.yml
 
 # Install CLI tools.
 - include_tasks: install_cli_tools.yml
 
 # Install applications.
 - include_tasks: install_applications.yml
+
+# Install fonts.
+- include_tasks: install_fonts.yml

@@ -1,8 +1,10 @@
-- name: Install fonts
-  loop:
-    - font-fira-code-nerd-font
+- name: Install fonts via Homebrew
+  loop: "{{ fonts }}"
+  when:
+    - item.macos is defined
+    - item.macos.source == 'brew'
   community.general.homebrew_cask:
-    name: "{{ item }}"
+    name: "{{ item.macos.name | default(item.name) }}"
     state: latest
     greedy: yes
   become: no

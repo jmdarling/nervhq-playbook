@@ -1,0 +1,8 @@
+fonts:
+  - name: fire-code-nerd-font
+    macos:
+      source: brew
+      name: font-fira-code-nerd-font
+    arch:
+      source: pacman
+      name: ttf-firacode-nerd
