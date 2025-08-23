@@ -48,6 +48,12 @@ cli_tools:
     macos:
       source: brew
 
+  # AI tools
+  - name: claude-code
+    arch:
+      source: paru
+      name: claude-code
+
   # Node.js Tools
   - name: volta
     arch:

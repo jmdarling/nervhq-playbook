@@ -1,3 +1,6 @@
+# Create AUR builder user.
+- include_tasks: create_aur_builder_user.yml
+
 # Update package manager.
 - include_tasks: update_package_manager_cache.yml
 
@@ -9,3 +12,6 @@
 
 # Install fonts.
 - include_tasks: install_fonts.yml
+
+# Configure default shell.
+- include_tasks: configure_default_shell.yml
