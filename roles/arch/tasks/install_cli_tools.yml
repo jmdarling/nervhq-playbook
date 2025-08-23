@@ -4,7 +4,7 @@
     - item.arch is defined
     - item.arch.source in ['pacman', 'paru']
   community.general.pacman:
-    executable: "{{ item.arch.source }}"
+    executable: "/usr/bin/{{ item.arch.source }}"
     name: "{{ item.arch.name | default(item.name) }}"
     state: present
   become: yes
