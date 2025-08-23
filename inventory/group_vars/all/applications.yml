@@ -1,6 +1,8 @@
 applications:
   # Password Management
   - name: 1password
+    arch:
+      source: paru
     macos:
       source: brew
 
