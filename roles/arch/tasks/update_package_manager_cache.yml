@@ -1,4 +1,4 @@
-- name: Update package manager
+- name: Update Pacman cache
   community.general.pacman:
     update_cache: true
   become: true

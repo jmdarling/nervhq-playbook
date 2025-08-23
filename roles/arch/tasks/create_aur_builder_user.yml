@@ -4,6 +4,7 @@
     name: aur_builder
     create_home: true
     group: wheel
+  changed_when: false # This is technically a change - but it's necessary to run for each playbook execution.
 
 - name: Allow the `aur_builder` user to run `sudo pacman` without a password
   become: true
@@ -13,3 +14,4 @@
     create: true
     mode: "0644"
     validate: "visudo -cf %s"
+  changed_when: false # This is technically a change - but it's necessary to run for each playbook execution.

@@ -1,7 +1,7 @@
 - name: Create AUR builder user
   ansible.builtin.include_tasks: create_aur_builder_user.yml
 
-- name: Update package manager
+- name: Update package manager cache
   ansible.builtin.include_tasks: update_package_manager_cache.yml
 
 - name: Install CLI tools

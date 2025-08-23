@@ -3,6 +3,7 @@
   ansible.builtin.file:
     path: /etc/sudoers.d/11-install-aur_builder
     state: absent
+  changed_when: false # This is technically a change - but it's necessary to run for each playbook execution.
 
 - name: Remove the aur_builder user
   become: true
@@ -10,3 +11,4 @@
     name: aur_builder
     state: absent
     remove: true
+  changed_when: false # This is technically a change - but it's necessary to run for each playbook execution.

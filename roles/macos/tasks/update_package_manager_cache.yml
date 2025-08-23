@@ -1,4 +1,4 @@
-- name: Update package manager
+- name: Update Homebrew cache
   community.general.homebrew:
     update_homebrew: true
   become: false
