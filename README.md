@@ -4,6 +4,15 @@ An Ansible playbook for automated workstation setup.
 
 _Note: as currently implemented, this playbook is meant to be cloned and run locally._
 
+## What this playbook manages
+
+This playbook:
+
+- Installs and updates CLI tools
+- Installs and updates desktop applications
+- Installs fonts
+- Configures the default shell (ZSH)
+
 ## Prerequisites
 
 ### Package manager
