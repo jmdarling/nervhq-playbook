@@ -4,6 +4,8 @@ cli_tools:
     macos:
       source: brew
   - name: neovim
+    arch:
+      source: pacman
     macos:
       source: brew
 

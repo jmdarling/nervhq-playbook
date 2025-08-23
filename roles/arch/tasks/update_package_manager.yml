@@ -1,0 +1,4 @@
+- name: Update package manager
+  community.general.pacman:
+    update_cache: yes
+  become: yes
