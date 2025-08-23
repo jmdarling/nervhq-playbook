@@ -1,0 +1,7 @@
+- name: Upgrade applications via Paru
+  kewlfft.aur.aur:
+    use: paru
+    update_cache: true
+    upgrade: true
+  become: true
+  become_user: aur_builder

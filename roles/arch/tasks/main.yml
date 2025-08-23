@@ -4,6 +4,9 @@
 - name: Update package manager cache
   ansible.builtin.include_tasks: update_package_manager_cache.yml
 
+- name: Upgrade packages
+  ansible.builtin.include_tasks: upgrade_packages.yml
+
 - name: Install CLI tools
   ansible.builtin.include_tasks: install_cli_tools.yml
 
