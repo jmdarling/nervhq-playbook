@@ -1,4 +1,4 @@
-- name: Install command line tools via brew
+- name: Install command line tools via package manager
   loop: "{{ cli_tools }}"
   when:
     - item.macos is defined
@@ -18,4 +18,4 @@
       curl -sSL {{ item.macos.url }} | bash
     fi
   args:
-    creates: "{{ ansible_env.HOME }}/.{{ item.name }}"
+    creates: "{{ item.macos.creates }}"

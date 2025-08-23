@@ -53,6 +53,8 @@ cli_tools:
     arch:
       source: script
       url: https://get.volta.sh
+      creates: "{{ ansible_env.HOME }}/.volta"
     macos:
       source: script
       url: https://get.volta.sh
+      creates: "{{ ansible_env.HOME }}/.volta"

@@ -1,8 +1,8 @@
-- name: Install applications via Pacman / Paru
+- name: Install applications via native package manager
   loop: "{{ applications }}"
   when:
     - item.arch is defined
-    - item.arch.source in ['pacman', 'paru']
+    - item.arch.source in ['pacman', 'paru'] # Note - 'paru' is unlikely to properly function at this time.
   community.general.pacman:
     executable: "/usr/bin/{{ item.arch.source }}"
     name: "{{ item.arch.name | default(item.name) }}"

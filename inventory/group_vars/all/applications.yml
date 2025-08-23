@@ -15,12 +15,16 @@ applications:
   - name: balenaetcher
     macos:
       source: brew
-  - name: visual-studio-code-bin
+  - name: visual-studio-code
     arch:
+      name: visual-studio-code-bin
       source: paru
     macos:
       source: brew
   - name: ghostty
+    arch:
+      name: ghostty
+      source: pacman
     macos:
       source: brew
 
@@ -34,11 +38,17 @@ applications:
 
   # Productivity
   - name: obsidian
+    arch:
+      name: md.obsidian.Obsidian
+      source: flatpak
     macos:
       source: brew
 
   # Communication
   - name: discord
+    arch:
+      name: dev.vencord.Vesktop
+      source: flatpak
     macos:
       source: brew
 
@@ -47,9 +57,14 @@ applications:
     macos:
       source: brew
   - name: proton-mail
+    arch:
+      name: me.proton.Mail
+      source: flatpak
     macos:
       source: brew
 
   # Gaming
-  - name: goverlay
   - name: steam
+    arch:
+      name: com.valvesoftware.Steam
+      source: flatpak

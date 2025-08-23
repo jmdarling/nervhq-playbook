@@ -7,7 +7,7 @@
     executable: "/usr/bin/{{ item.arch.source }}"
     name: "{{ item.arch.name | default(item.name) }}"
     state: present
-  become: yes
+  become: "{{ item.arch.source == 'paru' | ternary('no', 'yes') }}"
 
 - name: Install command line tools via script
   loop: "{{ cli_tools }}"
@@ -19,4 +19,4 @@
       curl -sSL {{ item.arch.url }} | bash
     fi
   args:
-    creates: "{{ ansible_env.HOME }}/.{{ item.name }}"
+    creates: "{{ item.arch.creates }}"
