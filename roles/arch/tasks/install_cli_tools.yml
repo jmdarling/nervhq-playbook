@@ -1,4 +1,4 @@
-- name: Install command line tools
+- name: Install command line tools via package manager
   loop: "{{ cli_tools }}"
   when:
     - item.arch is defined
@@ -8,3 +8,15 @@
     name: "{{ item.arch.name | default(item.name) }}"
     state: present
   become: yes
+
+- name: Install command line tools via script
+  loop: "{{ cli_tools }}"
+  when:
+    - item.arch is defined
+    - item.arch.source == 'script'
+  ansible.builtin.shell: |
+    if ! command -v {{ item.name }} &> /dev/null; then
+      curl -sSL {{ item.arch.url }} | bash
+    fi
+  args:
+    creates: "{{ ansible_env.HOME }}/.{{ item.name }}"

@@ -47,3 +47,12 @@ cli_tools:
       source: pacman
     macos:
       source: brew
+
+  # Node.js Tools
+  - name: volta
+    arch:
+      source: script
+      url: https://get.volta.sh
+    macos:
+      source: script
+      url: https://get.volta.sh

@@ -7,3 +7,15 @@
     name: "{{ item.macos.name | default(item.name) }}"
     state: latest
   become: no
+
+- name: Install command line tools via script
+  loop: "{{ cli_tools }}"
+  when:
+    - item.macos is defined
+    - item.macos.source == 'script'
+  ansible.builtin.shell: |
+    if ! command -v {{ item.name }} &> /dev/null; then
+      curl -sSL {{ item.macos.url }} | bash
+    fi
+  args:
+    creates: "{{ ansible_env.HOME }}/.{{ item.name }}"
