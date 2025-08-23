@@ -26,6 +26,9 @@ applications:
 
   # Web Browsers
   - name: zen
+    arch:
+      name: app.zen_browser.zen
+      source: flatpak
     macos:
       source: brew
 

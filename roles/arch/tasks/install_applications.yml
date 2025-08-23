@@ -1,4 +1,4 @@
-- name: Install command line tools
+- name: Install applications via Pacman / Paru
   loop: "{{ applications }}"
   when:
     - item.arch is defined
@@ -6,5 +6,15 @@
   community.general.pacman:
     executable: "/usr/bin/{{ item.arch.source }}"
     name: "{{ item.arch.name | default(item.name) }}"
-    state: present
+    state: present # Arch and AUR packages will be updated holistically in a separate task.
   become: yes
+
+- name: Install applications via Flatpak
+  loop: "{{ applications }}"
+  when:
+    - item.arch is defined
+    - item.arch.source == 'flatpak'
+  community.general.flatpak:
+    name: "{{ item.arch.name | default(item.name) }}"
+    state: latest # Flatpak packages will be updated piecemeal.
+  become: no
