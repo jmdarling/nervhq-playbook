@@ -6,5 +6,5 @@
   community.general.homebrew_cask:
     name: "{{ item.macos.name | default(item.name) }}"
     state: latest
-    greedy: yes
-  become: no
+    greedy: true
+  become: false

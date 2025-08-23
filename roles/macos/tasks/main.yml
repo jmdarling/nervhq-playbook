@@ -1,14 +1,14 @@
-# Update package manager.
-- include_tasks: update_package_manager_cache.yml
+- name: Update package manager
+  ansible.builtin.include_tasks: update_package_manager_cache.yml
 
-# Install CLI tools.
-- include_tasks: install_cli_tools.yml
+- name: Install CLI tools
+  ansible.builtin.include_tasks: install_cli_tools.yml
 
-# Install applications.
-- include_tasks: install_applications.yml
+- name: Install applications
+  ansible.builtin.include_tasks: install_applications.yml
 
-# Install fonts.
-- include_tasks: install_fonts.yml
+- name: Install fonts
+  ansible.builtin.include_tasks: install_fonts.yml
 
-# Configure default shell.
-- include_tasks: configure_default_shell.yml
+- name: Configure default shell
+  ansible.builtin.include_tasks: configure_default_shell.yml

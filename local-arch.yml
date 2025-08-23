@@ -1,8 +1,9 @@
 - name: NervHQ Arch workstation setup
   hosts: localhost
   connection: local
-  gather_facts: yes
+  gather_facts: true
 
   tasks:
-    - include_role:
+    - name: Include Arch role
+      ansible.builtin.include_role:
         name: arch

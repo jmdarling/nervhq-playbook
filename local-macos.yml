@@ -1,8 +1,9 @@
 - name: NervHQ MacOS workstation setup
   hosts: localhost
   connection: local
-  gather_facts: yes
+  gather_facts: true
 
   tasks:
-    - include_role:
+    - name: Include macOS role
+      ansible.builtin.include_role:
         name: macos

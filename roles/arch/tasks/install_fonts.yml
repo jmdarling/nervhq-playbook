@@ -6,7 +6,7 @@
   community.general.pacman:
     name: "{{ item.arch.name | default(item.name) }}"
     state: present # Pacman packages will be updated holistically in a separate task.
-  become: yes
+  become: true
 
 - name: Install fonts via Paru
   loop: "{{ fonts }}"
@@ -17,5 +17,5 @@
     use: paru
     name: "{{ item.arch.name | default(item.name) }}"
     state: present # Paru packages will be updated holistically in a separate task.
-  become: yes
+  become: true
   become_user: "{{ ansible_user_id }}"

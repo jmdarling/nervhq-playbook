@@ -1,11 +1,11 @@
 ---
 - name: Get path to zsh
-  command: which zsh
-  register: zsh_path_result
+  ansible.builtin.command: which zsh
+  register: arch_zsh_path_result
   changed_when: false
 
 - name: Set Zsh as default shell
   become: true
-  user:
+  ansible.builtin.user:
     name: "{{ ansible_user_id }}"
-    shell: "{{ zsh_path_result.stdout }}"
+    shell: "{{ arch_zsh_path_result.stdout }}"

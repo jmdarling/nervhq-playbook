@@ -1,4 +1,4 @@
 - name: Update package manager
   community.general.homebrew:
-    update_homebrew: yes
-  become: no
+    update_homebrew: true
+  become: false

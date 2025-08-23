@@ -6,7 +6,7 @@
   community.general.homebrew:
     name: "{{ item.macos.name | default(item.name) }}"
     state: latest
-  become: no
+  become: false
 
 - name: Install command line tools via script
   loop: "{{ cli_tools }}"
@@ -14,6 +14,7 @@
     - item.macos is defined
     - item.macos.source == 'script'
   ansible.builtin.shell: |
+    set -o pipefail
     if ! command -v {{ item.name }} &> /dev/null; then
       curl -sSL {{ item.macos.url }} | bash
     fi
