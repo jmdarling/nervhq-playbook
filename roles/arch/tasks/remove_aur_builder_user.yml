@@ -1,0 +1,12 @@
+- name: Remove sudoers file for aur_builder user
+  become: yes
+  ansible.builtin.file:
+    path: /etc/sudoers.d/11-install-aur_builder
+    state: absent
+
+- name: Remove the aur_builder user
+  become: yes
+  ansible.builtin.user:
+    name: aur_builder
+    state: absent
+    remove: yes

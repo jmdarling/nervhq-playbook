@@ -15,3 +15,6 @@
 
 # Configure default shell.
 - include_tasks: configure_default_shell.yml
+
+# Remove AUR builder user.
+- include_tasks: remove_aur_builder_user.yml

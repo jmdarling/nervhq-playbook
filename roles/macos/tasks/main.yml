@@ -9,3 +9,6 @@
 
 # Install fonts.
 - include_tasks: install_fonts.yml
+
+# Configure default shell.
+- include_tasks: configure_default_shell.yml
