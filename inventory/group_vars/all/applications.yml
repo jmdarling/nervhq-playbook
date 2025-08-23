@@ -15,7 +15,7 @@ applications:
       source: brew
   - name: visual-studio-code-bin
     arch:
-      source: pacman
+      source: paru
     macos:
       source: brew
   - name: ghostty
