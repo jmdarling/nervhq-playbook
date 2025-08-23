@@ -1,0 +1,8 @@
+- name: Install fonts
+  loop:
+    - font-fira-code-nerd-font
+  community.general.homebrew_cask:
+    name: "{{ item }}"
+    state: latest
+    greedy: yes
+  become: no

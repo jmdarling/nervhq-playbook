@@ -6,3 +6,6 @@
 
 # Install applications.
 - include_tasks: install_applications.yml
+
+# Install fonts.
+- include_tasks: install_fonts.yml
