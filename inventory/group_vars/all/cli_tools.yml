@@ -11,25 +11,39 @@ cli_tools:
 
   # Shell & Terminal Enhancement
   - name: zsh
+    arch:
+      source: pacman
   - name: starship
+    arch:
+      source: pacman
     macos:
       source: brew
   - name: atuin
+    arch:
+      source: pacman
     macos:
       source: brew
 
   # System Information
   - name: fastfetch
+    arch:
+      source: pacman
     macos:
       source: brew
 
   # File & Directory Tools
   - name: fzf
+    arch:
+      source: pacman
     macos:
       source: brew
   - name: stow
+    arch:
+      source: pacman
     macos:
       source: brew
   - name: zoxide
+    arch:
+      source: pacman
     macos:
       source: brew
