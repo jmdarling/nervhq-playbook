@@ -13,7 +13,7 @@ applications:
   - name: balenaetcher
     macos:
       source: brew
-  - name: visual-studio-code
+  - name: visual-studio-code-bin
     arch:
       source: pacman
     macos:
