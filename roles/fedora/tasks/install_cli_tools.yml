@@ -1,0 +1,33 @@
+- name: Enable COPR repository for DNF command line tools
+  loop: "{{ cli_tools }}"
+  when:
+    - item.fedora is defined
+    - item.fedora.source == 'dnf'
+    - item.fedora.copr is defined
+  community.general.copr:
+    name: "{{ item.fedora.copr }}"
+    state: enabled
+  become: true
+
+- name: Install command line tools via DNF
+  loop: "{{ cli_tools }}"
+  when:
+    - item.fedora is defined
+    - item.fedora.source == 'dnf'
+  ansible.builtin.dnf:
+    name: "{{ item.fedora.name | default(item.name) }}"
+    state: present # DNF packages will be updated holistically in a separate task.
+  become: true
+
+- name: Install command line tools via script
+  loop: "{{ cli_tools }}"
+  when:
+    - item.fedora is defined
+    - item.fedora.source == 'script'
+  ansible.builtin.shell: |
+    set -o pipefail
+    if ! command -v {{ item.name }} &> /dev/null; then
+      curl -sSL {{ item.fedora.url }} | bash
+    fi
+  args:
+    creates: "{{ item.fedora.creates }}"

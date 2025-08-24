@@ -1,0 +1,11 @@
+---
+- name: Get path to zsh
+  ansible.builtin.command: which zsh
+  register: fedora_zsh_path_result
+  changed_when: false
+
+- name: Set Zsh as default shell
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    shell: "{{ fedora_zsh_path_result.stdout }}"

@@ -1,8 +1,10 @@
 fonts:
   - name: fire-code-nerd-font
-    macos:
-      source: brew
-      name: font-fira-code-nerd-font
     arch:
       source: pacman
       name: ttf-firacode-nerd
+    fedora:
+      source: manual # Manually install: https://www.nerdfonts.com/font-downloads
+    macos:
+      source: brew
+      name: font-fira-code-nerd-font

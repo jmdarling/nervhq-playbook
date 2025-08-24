@@ -1,38 +1,59 @@
 applications:
-  # Password Management
-  - name: 1password
+  # Communication
+  - name: discord
     arch:
-      source: paru
+      name: dev.vencord.Vesktop
+      source: flatpak
+    fedora:
+      name: dev.vencord.Vesktop
+      source: flatpak
     macos:
       source: brew
 
-  # Window Management
-  - name: nikitabobko/tap/aerospace
-    macos:
-      source: brew
+  # Data Management
+  - name: syncthing
+    arch:
+      name: syncthingtray-qt6
+      source: paru
+    fedora:
+      name: com.github.zocker_160.SyncThingy
+      source: flatpak
 
   # Development Tools
   - name: balenaetcher
-    macos:
-      source: brew
-  - name: visual-studio-code
-    arch:
-      name: visual-studio-code-bin
-      source: paru
     macos:
       source: brew
   - name: ghostty
     arch:
       name: ghostty
       source: pacman
+    fedora:
+      source: dnf
+      copr: scottames/ghostty
+    macos:
+      source: brew
+  - name: visual-studio-code
+    arch:
+      name: visual-studio-code-bin
+      source: paru
+    fedora:
+      source: manual # Manually install: https://code.visualstudio.com/download
     macos:
       source: brew
 
-  # Web Browsers
-  - name: zen
+  # Gaming
+  - name: steam
     arch:
-      name: app.zen_browser.zen
-      source: flatpak
+      source: pacman
+    fedora:
+      source: dnf
+
+  # Password Management
+  - name: 1password
+    arch:
+      source: paru
+    fedora:
+      source: manual # Manually install: https://support.1password.com/install-linux/#fedora-or-red-hat-enterprise-linux
     macos:
       source: brew
 
@@ -41,13 +62,8 @@ applications:
     arch:
       name: md.obsidian.Obsidian
       source: flatpak
-    macos:
-      source: brew
-
-  # Communication
-  - name: discord
-    arch:
-      name: dev.vencord.Vesktop
+    fedora:
+      name: md.obsidian.Obsidian
       source: flatpak
     macos:
       source: brew
@@ -60,16 +76,24 @@ applications:
     arch:
       name: me.proton.Mail
       source: flatpak
+    fedora:
+      name: me.proton.Mail
+      source: flatpak
     macos:
       source: brew
 
-  # Gaming
-  - name: steam
+  # Web Browsers
+  - name: zen
     arch:
-      source: pacman
+      name: app.zen_browser.zen
+      source: flatpak
+    fedora:
+      name: app.zen_browser.zen
+      source: flatpak
+    macos:
+      source: brew
 
-  # Data management
-  - name: syncthing
-    arch:
-      name: syncthingtray-qt6
-      source: paru
+  # Window Management
+  - name: nikitabobko/tap/aerospace
+    macos:
+      source: brew

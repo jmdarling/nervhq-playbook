@@ -1,0 +1,30 @@
+- name: Enable COPR repository for DNF applications
+  loop: "{{ applications }}"
+  when:
+    - item.fedora is defined
+    - item.fedora.source == 'dnf'
+    - item.fedora.copr is defined
+  community.general.copr:
+    name: "{{ item.fedora.copr }}"
+    state: enabled
+  become: true
+
+- name: Install applications via DNF
+  loop: "{{ applications }}"
+  when:
+    - item.fedora is defined
+    - item.fedora.source == 'dnf'
+  ansible.builtin.dnf:
+    name: "{{ item.fedora.name | default(item.name) }}"
+    state: present # DNF packages will be updated holistically in a separate task.
+  become: true
+
+- name: Install applications via Flatpak
+  loop: "{{ applications }}"
+  when:
+    - item.fedora is defined
+    - item.fedora.source == 'flatpak'
+  community.general.flatpak:
+    name: "{{ item.fedora.name | default(item.name) }}"
+    state: latest # Flatpak packages will be updated piecemeal.
+  become: false

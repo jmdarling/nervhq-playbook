@@ -1,0 +1,6 @@
+- name: Upgrade packages and package manager cache using DNF
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_cache: yes
+  become: true

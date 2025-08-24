@@ -1,0 +1,9 @@
+- name: NervHQ Fedora workstation setup
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  tasks:
+    - name: Include Fedora role
+      ansible.builtin.include_role:
+        name: fedora

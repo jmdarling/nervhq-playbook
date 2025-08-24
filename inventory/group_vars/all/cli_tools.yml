@@ -1,72 +1,95 @@
 cli_tools:
-  # Core Development Tools
+  # AI Tools
+  - name: claude-code
+    arch:
+      source: paru
+      name: claude-code
+    fedora:
+      source: manual # Manually install: https://docs.anthropic.com/en/docs/claude-code/overview#get-started-in-30-seconds
+
+  # Development Tools
+  - name: ansible-lint
+    arch:
+      source: pacman
+      name: ansible-lint
+    fedora:
+      source: dnf
+      name: python3-ansible-lint.noarch
+    macos:
+      source: brew
   - name: git
     macos:
       source: brew
   - name: neovim
     arch:
       source: pacman
+    fedora:
+      source: dnf
     macos:
       source: brew
-
-  # Shell & Terminal Enhancement
-  - name: zsh
-    arch:
-      source: pacman
-  - name: starship
-    arch:
-      source: pacman
-    macos:
-      source: brew
-  - name: atuin
-    arch:
-      source: pacman
-    macos:
-      source: brew
-
-  # System Information
-  - name: fastfetch
-    arch:
-      source: pacman
-    macos:
-      source: brew
-
-  # File & Directory Tools
-  - name: fzf
-    arch:
-      source: pacman
-    macos:
-      source: brew
-  - name: stow
-    arch:
-      source: pacman
-    macos:
-      source: brew
-  - name: zoxide
-    arch:
-      source: pacman
-    macos:
-      source: brew
-
-  # AI tools
-  - name: claude-code
-    arch:
-      source: paru
-      name: claude-code
-
-  # Dev tools
   - name: volta
     arch:
       source: script
       url: https://get.volta.sh
       creates: "{{ ansible_env.HOME }}/.volta"
+    fedora:
+      source: script
+      url: https://get.volta.sh
+      creates: "{{ ansible_env.HOME }}/.volta"
     macos:
       source: script
       url: https://get.volta.sh
       creates: "{{ ansible_env.HOME }}/.volta"
-  - name: ansible-lint
+
+  # File & Directory Tools
+  - name: fzf
     arch:
       source: pacman
-      name: ansible-lint
+    fedora:
+      source: dnf
+    macos:
+      source: brew
+  - name: stow
+    arch:
+      source: pacman
+    fedora:
+      source: dnf
+    macos:
+      source: brew
+  - name: zoxide
+    arch:
+      source: pacman
+    fedora:
+      source: dnf
+    macos:
+      source: brew
+
+  # Shell & Terminal Enhancement
+  - name: atuin
+    arch:
+      source: pacman
+    fedora:
+      source: dnf
+    macos:
+      source: brew
+  - name: starship
+    arch:
+      source: pacman
+    fedora:
+      source: dnf
+    macos:
+      source: brew
+  - name: zsh
+    arch:
+      source: pacman
+    fedora:
+      source: dnf
+
+  # System Information
+  - name: fastfetch
+    arch:
+      source: pacman
+    fedora:
+      source: dnf
     macos:
       source: brew

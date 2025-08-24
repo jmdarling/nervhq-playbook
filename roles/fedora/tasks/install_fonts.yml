@@ -1,0 +1,9 @@
+- name: Install fonts via DNF
+  loop: "{{ fonts }}"
+  when:
+    - item.fedora is defined
+    - item.fedora.source == 'dnf'
+  ansible.builtin.dnf:
+    name: "{{ item.fedora.name | default(item.name) }}"
+    state: present # DNF packages will be updated holistically in a separate task.
+  become: true

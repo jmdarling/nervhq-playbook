@@ -29,6 +29,10 @@ Installation guide: [docs.nervhq.io](https://docs.nervhq.io/projects/homelab/NER
 
 Installation guide: [docs.nervhq.io](<https://docs.nervhq.io/projects/homelab/NERV-HQ/Arch+workstation+setup/Steps/1.2+-+Install+Paru+-+Arch+User+Repository+(AUR)+helper>)
 
+#### Fedora
+
+Coming soon!
+
 #### MacOS
 
 This playbook leverages Homebrew for the vast majority of command line tools and desktop applications.
@@ -67,6 +71,12 @@ _Note: You will be asked to provide a "BECOME password" when executing the playb
 
 ```sh
 ansible-playbook local-arch.yml
+```
+
+### Fedora
+
+```sh
+ansible-playbook local-fedora.yml
 ```
 
 ### MacOS
