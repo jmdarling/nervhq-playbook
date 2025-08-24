@@ -66,5 +66,4 @@ applications:
   # Gaming
   - name: steam
     arch:
-      name: com.valvesoftware.Steam
-      source: flatpak
+      source: pacman
