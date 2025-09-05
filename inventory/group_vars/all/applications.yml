@@ -37,7 +37,9 @@ applications:
       name: visual-studio-code-bin
       source: paru
     fedora:
-      source: manual # Manually install: https://code.visualstudio.com/download
+      source: script
+      script_name: install-vscode.sh
+      creates: /usr/bin/code
     macos:
       source: brew
 
@@ -53,7 +55,9 @@ applications:
     arch:
       source: paru
     fedora:
-      source: manual # Manually install: https://support.1password.com/install-linux/#fedora-or-red-hat-enterprise-linux
+      source: script
+      script_name: install-1password.sh
+      creates: /usr/bin/1password
     macos:
       source: brew
 

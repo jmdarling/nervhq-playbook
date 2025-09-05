@@ -28,3 +28,14 @@
     name: "{{ item.fedora.name | default(item.name) }}"
     state: latest # Flatpak packages will be updated piecemeal.
   become: false
+
+- name: Install applications via shell script
+  loop: "{{ applications }}"
+  when:
+    - item.fedora is defined
+    - item.fedora.source == 'script'
+    - item.fedora.script_name is defined
+  ansible.builtin.script:
+    cmd: "{{ item.fedora.script_name }}"
+    creates: "{{ item.fedora.creates | default(omit) }}"
+  become: true
