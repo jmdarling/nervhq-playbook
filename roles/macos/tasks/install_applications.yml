@@ -8,3 +8,14 @@
     state: latest
     greedy: true
   become: false
+
+- name: Install applications via shell script
+  loop: "{{ applications }}"
+  when:
+    - item.macos is defined
+    - item.macos.source == 'script'
+    - item.macos.script_name is defined
+  ansible.builtin.script:
+    cmd: "{{ item.macos.script_name }}"
+    creates: "{{ item.macos.creates | default(omit) }}"
+  become: true

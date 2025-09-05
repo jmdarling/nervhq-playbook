@@ -30,15 +30,15 @@ cli_tools:
   - name: volta
     arch:
       source: script
-      url: https://get.volta.sh
+      script_name: install-volta.sh
       creates: "{{ ansible_env.HOME }}/.volta"
     fedora:
       source: script
-      url: https://get.volta.sh
+      script_name: install-volta.sh
       creates: "{{ ansible_env.HOME }}/.volta"
     macos:
       source: script
-      url: https://get.volta.sh
+      script_name: install-volta.sh
       creates: "{{ ansible_env.HOME }}/.volta"
 
   # File & Directory Tools

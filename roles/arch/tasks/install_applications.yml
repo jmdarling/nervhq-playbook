@@ -29,3 +29,14 @@
     name: "{{ item.arch.name | default(item.name) }}"
     state: latest # Flatpak packages will be updated piecemeal.
   become: false
+
+- name: Install applications via shell script
+  loop: "{{ applications }}"
+  when:
+    - item.arch is defined
+    - item.arch.source == 'script'
+    - item.arch.script_name is defined
+  ansible.builtin.script:
+    cmd: "{{ item.arch.script_name }}"
+    creates: "{{ item.arch.creates | default(omit) }}"
+  become: true
