@@ -60,6 +60,16 @@ applications:
       creates: /usr/bin/1password
     macos:
       source: brew
+  # Media
+  - name: jellyfin
+    arch:
+      name: com.github.iwalton3.jellyfin-media-player
+      source: flatpak
+    fedora:
+      name: com.github.iwalton3.jellyfin-media-player
+      source: flatpak
+    macos:
+      source: brew
 
   # Productivity
   - name: obsidian
