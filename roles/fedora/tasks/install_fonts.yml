@@ -7,3 +7,13 @@
     name: "{{ item.fedora.name | default(item.name) }}"
     state: present # DNF packages will be updated holistically in a separate task.
   become: true
+
+- name: Install fonts via shell script
+  loop: "{{ fonts }}"
+  when:
+    - item.fedora is defined
+    - item.fedora.source == 'script'
+    - item.fedora.script_name is defined
+  ansible.builtin.script:
+    cmd: "{{ item.fedora.script_name }}"
+    creates: "{{ item.fedora.creates | default(omit) }}"

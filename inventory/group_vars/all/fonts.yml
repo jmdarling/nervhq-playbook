@@ -4,7 +4,9 @@ fonts:
       source: pacman
       name: ttf-firacode-nerd
     fedora:
-      source: manual # Manually install: https://www.nerdfonts.com/font-downloads
+      source: script
+      script_name: install-fira-code-nerd-font.sh
+      creates: "{{ ansible_env.HOME }}/.local/share/fonts/FiraCodeNerdFont-Regular.ttf"
     macos:
       source: brew
       name: font-fira-code-nerd-font
