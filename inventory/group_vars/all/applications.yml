@@ -13,8 +13,8 @@ applications:
   # Data Management
   - name: syncthing
     arch:
-      name: syncthingtray-qt6
-      source: paru
+      name: syncthing
+      source: pacman
     fedora:
       name: com.github.zocker_160.SyncThingy
       source: flatpak
