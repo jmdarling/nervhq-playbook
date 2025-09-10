@@ -1,4 +1,12 @@
 cli_tools:
+  # System dependencies
+  - name: xdg-desktop-portal # Required for some Flatpak apps to work properly.
+    arch:
+      source: pacman
+  - name: xdg-desktop-portal-kde # Assumes KDE.
+    arch:
+      source: pacman
+
   # AI Tools
   - name: claude-code
     arch:
