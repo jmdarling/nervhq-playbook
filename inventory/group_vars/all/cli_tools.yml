@@ -8,15 +8,6 @@ cli_tools:
       source: manual # Manually install: https://docs.anthropic.com/en/docs/claude-code/overview#get-started-in-30-seconds
 
   # Development Tools
-  - name: ansible-lint
-    arch:
-      source: pacman
-      name: ansible-lint
-    fedora:
-      source: dnf
-      name: python3-ansible-lint.noarch
-    macos:
-      source: brew
   - name: git
     macos:
       source: brew
