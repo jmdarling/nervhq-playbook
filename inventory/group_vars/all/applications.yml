@@ -3,7 +3,7 @@ applications:
   - name: discord
     arch:
       name: dev.vencord.Vesktop
-      source: flatpak
+      source: paru
     fedora:
       name: dev.vencord.Vesktop
       source: flatpak

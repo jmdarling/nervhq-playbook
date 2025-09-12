@@ -1,20 +1,4 @@
 cli_tools:
-  # System dependencies
-  - name: xdg-desktop-portal # Required for some Flatpak apps to work properly.
-    arch:
-      source: pacman
-  - name: xdg-desktop-portal-kde # Assumes KDE.
-    arch:
-      source: pacman
-
-  # AI Tools
-  - name: claude-code
-    arch:
-      source: paru
-      name: claude-code
-    fedora:
-      source: manual # Manually install: https://docs.anthropic.com/en/docs/claude-code/overview#get-started-in-30-seconds
-
   # Development Tools
   - name: git
     macos:
