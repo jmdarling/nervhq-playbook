@@ -59,7 +59,9 @@ cli_tools:
     arch:
       source: pacman
     fedora:
-      source: dnf
+      source: script
+      script_name: install-starship.sh
+      creates: "/usr/local/bin/starship"
     macos:
       source: brew
   - name: zsh
