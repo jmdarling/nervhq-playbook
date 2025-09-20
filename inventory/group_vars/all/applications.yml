@@ -16,8 +16,8 @@ applications:
       name: syncthing
       source: pacman
     fedora:
-      name: com.github.zocker_160.SyncThingy
-      source: flatpak
+      name: syncthing
+      source: dnf
 
   # Development Tools
   - name: balenaetcher
@@ -67,6 +67,15 @@ applications:
       source: flatpak
     fedora:
       name: com.github.iwalton3.jellyfin-media-player
+      source: flatpak
+    macos:
+      source: brew
+  - name: spotify
+    arch:
+      name: com.spotify.Client
+      source: flatpak
+    fedora:
+      name: com.spotify.Client
       source: flatpak
     macos:
       source: brew
