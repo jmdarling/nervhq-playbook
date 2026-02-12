@@ -1,4 +1,9 @@
 applications:
+  # AI
+  - name: chatgpt
+    macos:
+      source: brew
+
   # Communication
   - name: discord
     arch:
@@ -63,7 +68,7 @@ applications:
       creates: /usr/bin/1password
     macos:
       source: brew
- 
+
   # Productivity
   - name: obsidian
     arch:
@@ -99,4 +104,3 @@ applications:
       source: flatpak
     macos:
       source: brew
-
