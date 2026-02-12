@@ -4,6 +4,14 @@ applications:
     macos:
       source: brew
 
+  - name: codex
+    macos:
+      source: brew
+
+  - name: codex-app
+    macos:
+      source: brew
+
   # Communication
   - name: discord
     arch:
