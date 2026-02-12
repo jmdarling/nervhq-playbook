@@ -48,13 +48,6 @@ cli_tools:
       source: brew
 
   # Shell & Terminal Enhancement
-  - name: atuin
-    arch:
-      source: pacman
-    fedora:
-      source: dnf
-    macos:
-      source: brew
   - name: starship
     arch:
       source: pacman

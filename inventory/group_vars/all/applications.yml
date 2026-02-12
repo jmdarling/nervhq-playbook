@@ -18,6 +18,9 @@ applications:
     fedora:
       name: syncthing
       source: dnf
+    macos:
+      name: syncthing
+      source: brew
 
   # Development Tools
   - name: balenaetcher
@@ -60,26 +63,7 @@ applications:
       creates: /usr/bin/1password
     macos:
       source: brew
-  # Media
-  - name: jellyfin
-    arch:
-      name: com.github.iwalton3.jellyfin-media-player
-      source: flatpak
-    fedora:
-      name: com.github.iwalton3.jellyfin-media-player
-      source: flatpak
-    macos:
-      source: brew
-  - name: spotify
-    arch:
-      name: com.spotify.Client
-      source: flatpak
-    fedora:
-      name: com.spotify.Client
-      source: flatpak
-    macos:
-      source: brew
-
+ 
   # Productivity
   - name: obsidian
     arch:
@@ -106,7 +90,7 @@ applications:
       source: brew
 
   # Web Browsers
-  - name: zen
+  - name: firefox
     arch:
       name: app.zen_browser.zen
       source: flatpak
@@ -116,7 +100,3 @@ applications:
     macos:
       source: brew
 
-  # Window Management
-  - name: nikitabobko/tap/aerospace
-    macos:
-      source: brew
