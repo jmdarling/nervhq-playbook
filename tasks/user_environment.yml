@@ -1,0 +1,9 @@
+- name: Put user tools on the interactive Zsh path
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_facts.env.HOME }}/.zshrc"
+    create: true
+    mode: "0644"
+    marker: "# {mark} NERVHQ USER TOOLS"
+    block: |
+      export VOLTA_HOME="$HOME/.volta"
+      export PATH="$VOLTA_HOME/bin:$HOME/.local/bin:$PATH"

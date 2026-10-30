@@ -5,7 +5,7 @@
     - item.macos.source == 'brew'
   community.general.homebrew_cask:
     name: "{{ item.macos.name | default(item.name) }}"
-    state: latest
+    state: "{{ 'latest' if workstation_upgrade_packages else 'present' }}"
     greedy: true
   become: false
 
@@ -19,3 +19,13 @@
     cmd: "{{ item.macos.script_name }}"
     creates: "{{ item.macos.creates | default(omit) }}"
   become: true
+
+- name: Install application formulae via Homebrew
+  loop: "{{ applications }}"
+  when:
+    - item.macos is defined
+    - item.macos.source == 'brew_formula'
+  community.general.homebrew:
+    name: "{{ item.macos.name | default(item.name) }}"
+    state: "{{ 'latest' if workstation_upgrade_packages else 'present' }}"
+  become: false

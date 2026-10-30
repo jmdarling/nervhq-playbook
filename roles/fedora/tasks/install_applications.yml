@@ -4,9 +4,14 @@
     - item.fedora is defined
     - item.fedora.source == 'dnf'
     - item.fedora.copr is defined
-  community.general.copr:
-    name: "{{ item.fedora.copr }}"
-    state: enabled
+  vars:
+    fedora_copr_base: "https://copr.fedorainfracloud.org/coprs/{{ item.fedora.copr }}/repo"
+  # community.general.copr requires DNF4's Python bindings; use COPR's repo file with DNF5.
+  ansible.builtin.get_url:
+    url: >-
+      {{ fedora_copr_base }}/fedora-{{ ansible_facts.distribution_major_version }}/dnf.repo?arch={{ ansible_facts.architecture }}
+    dest: "/etc/yum.repos.d/_copr:copr.fedorainfracloud.org:{{ item.fedora.copr | replace('/', ':') }}.repo"
+    mode: "0644"
   become: true
 
 - name: Install applications via DNF
@@ -14,7 +19,7 @@
   when:
     - item.fedora is defined
     - item.fedora.source == 'dnf'
-  ansible.builtin.dnf:
+  ansible.builtin.dnf5:
     name: "{{ item.fedora.name | default(item.name) }}"
     state: present # DNF packages will be updated holistically in a separate task.
   become: true
@@ -26,7 +31,9 @@
     - item.fedora.source == 'flatpak'
   community.general.flatpak:
     name: "{{ item.fedora.name | default(item.name) }}"
-    state: latest # Flatpak packages will be updated piecemeal.
+    state: "{{ 'latest' if workstation_upgrade_packages else 'present' }}"
+    method: user
+    remote: flathub
   become: false
 
 - name: Install applications via shell script
@@ -39,3 +46,8 @@
     cmd: "{{ item.fedora.script_name }}"
     creates: "{{ item.fedora.creates | default(omit) }}"
   become: true
+
+# Vendor RPM postinstall scripts may rewrite their .repo files. Converge them
+# before the first run completes, rather than reporting a change next time.
+- name: Reconcile vendor repositories after package installation
+  ansible.builtin.import_tasks: configure_vendor_repositories.yml

@@ -5,6 +5,6 @@
     - item.macos.source == 'brew'
   community.general.homebrew_cask:
     name: "{{ item.macos.name | default(item.name) }}"
-    state: latest
+    state: "{{ 'latest' if workstation_upgrade_packages else 'present' }}"
     greedy: true
   become: false

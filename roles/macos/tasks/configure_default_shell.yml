@@ -1,10 +1,10 @@
 - name: Get path to zsh
-  ansible.builtin.command: which zsh
+  ansible.builtin.shell: command -v zsh # noqa: command-instead-of-shell -- command is a shell builtin
   register: macos_zsh_path_result
   changed_when: false
 
 - name: Set Zsh as default shell
   become: true
   ansible.builtin.user:
-    name: "{{ ansible_user_id }}"
+    name: "{{ ansible_facts.user_id }}"
     shell: "{{ macos_zsh_path_result.stdout }}"

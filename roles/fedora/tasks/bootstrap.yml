@@ -1,0 +1,27 @@
+- name: Install Fedora prerequisites
+  become: true
+  ansible.builtin.dnf5:
+    name: [curl, tar, unzip, fontconfig, flatpak, gnupg2, python3-libdnf5, dnf5-plugins, perl-Digest-SHA]
+    state: present
+
+- name: Configure user Flathub remote
+  community.general.flatpak_remote:
+    name: flathub
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: user
+    state: present
+
+- name: Trust vendor signing keys by fingerprint
+  become: true
+  ansible.builtin.rpm_key:
+    key: "{{ item.key }}"
+    fingerprint: "{{ item.fingerprint }}"
+    state: present
+  loop:
+    - key: https://packages.microsoft.com/keys/microsoft.asc
+      fingerprint: BC528686B50D79E339D3721CEB3E94ADBE1229CF
+    - key: https://downloads.1password.com/linux/keys/1password.asc
+      fingerprint: 3FEF9748469ADBE15DA7CA80AC2D62742012EA22
+
+- name: Configure vendor repositories before package installation
+  ansible.builtin.import_tasks: configure_vendor_repositories.yml

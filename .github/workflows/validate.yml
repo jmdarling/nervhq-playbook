@@ -21,7 +21,9 @@ jobs:
         with:
           python-version: "3.14"
           cache: pip
-          cache-dependency-path: requirements-dev.txt
+          cache-dependency-path: |
+            requirements-dev.txt
+            pyproject.toml
       - name: Install validation dependencies
         run: |
           python -m pip install -r requirements-dev.txt
@@ -30,8 +32,21 @@ jobs:
         run: ansible-lint --offline
       - name: Check shell syntax
         run: |
-          for script in roles/*/files/*.sh; do
+          for script in roles/*/files/*.sh scripts/*.sh tests/*.sh; do
             bash -n "$script" || exit 1
           done
       - name: Verify installer failure handling
         run: python -m unittest discover -s tests -v
+
+  fedora-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Exercise Fedora packages and user installers twice in a disposable container
+        run: >-
+          docker run --rm
+          -v "$PWD:/source:ro"
+          fedora@sha256:43b29f65a41eb9c35e1cd5323e3bdf3b655c2357a9f4f1ff2f9c2798e5045d80
+          bash /source/tests/fedora-smoke.sh
