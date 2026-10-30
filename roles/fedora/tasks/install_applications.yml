@@ -46,3 +46,8 @@
     cmd: "{{ item.fedora.script_name }}"
     creates: "{{ item.fedora.creates | default(omit) }}"
   become: true
+
+# Vendor RPM postinstall scripts may rewrite their .repo files. Converge them
+# before the first run completes, rather than reporting a change next time.
+- name: Reconcile vendor repositories after package installation
+  ansible.builtin.import_tasks: configure_vendor_repositories.yml

@@ -1,0 +1,21 @@
+- name: Configure signed vendor repositories
+  become: true
+  ansible.builtin.yum_repository:
+    name: "{{ item.name }}"
+    description: "{{ item.description }}"
+    baseurl: "{{ item.baseurl }}"
+    gpgkey: "{{ item.gpgkey }}"
+    gpgcheck: true
+    repo_gpgcheck: "{{ item.repo_gpgcheck }}"
+    enabled: true
+  loop:
+    - name: code
+      description: Visual Studio Code
+      baseurl: https://packages.microsoft.com/yumrepos/vscode
+      gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+      repo_gpgcheck: false
+    - name: 1password
+      description: 1Password Stable Channel
+      baseurl: https://downloads.1password.com/linux/rpm/stable/$basearch
+      gpgkey: https://downloads.1password.com/linux/keys/1password.asc
+      repo_gpgcheck: true
