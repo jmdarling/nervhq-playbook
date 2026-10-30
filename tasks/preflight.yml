@@ -19,11 +19,10 @@
     that:
       - item[workstation_os].source in workstation_sources[workstation_os]
       - item[workstation_os].source != 'script' or item[workstation_os].script_name is defined
-      - item[workstation_os].source != 'script' or item[workstation_os].creates is defined
     fail_msg: "Invalid package source for {{ item.name }} on {{ workstation_os }}"
   vars:
     workstation_sources:
-      fedora: [dnf, flatpak, script]
+      fedora: [dnf, flatpak, script, release_rpm]
       macos: [brew, brew_formula, script]
   loop: "{{ applications + cli_tools + fonts }}"
   when: item[workstation_os] is defined

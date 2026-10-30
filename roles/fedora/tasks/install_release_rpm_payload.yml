@@ -1,0 +1,28 @@
+- name: Create download directory
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: nervhq-rpm-
+  register: fedora_rpm_temp
+
+- name: Download and install verified RPM
+  block:
+    - name: Download the exact digest-verified upstream RPM
+      ansible.builtin.get_url:
+        url: "{{ common_assets[0].browser_download_url }}"
+        dest: "{{ fedora_rpm_temp.path }}/package.rpm"
+        checksum: "{{ common_digest }}"
+        mode: "0644"
+
+    - name: Install verified upstream RPM and resolve dependencies
+      become: true
+      ansible.builtin.dnf5:
+        name: "{{ fedora_rpm_temp.path }}/package.rpm"
+        state: present
+        # Etcher publishes SHA-256 release digests, not a configured RPM signing key.
+        # This exception is scoped to this verified local package transaction.
+        disable_gpg_check: true
+  always:
+    - name: Remove temporary RPM download
+      ansible.builtin.file:
+        path: "{{ fedora_rpm_temp.path }}"
+        state: absent

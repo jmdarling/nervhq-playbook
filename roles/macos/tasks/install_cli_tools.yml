@@ -8,11 +8,9 @@
     state: "{{ 'latest' if workstation_upgrade_packages else 'present' }}"
   become: false
 
-- name: Install command line tools via script
+- name: Install or upgrade verified releases
+  ansible.builtin.include_tasks: ../../common/tasks/install_release.yml
   loop: "{{ cli_tools }}"
   when:
     - item.macos is defined
     - item.macos.source == 'script'
-  ansible.builtin.script:
-    cmd: "{{ item.macos.script_name }}"
-    creates: "{{ item.macos.creates }}"

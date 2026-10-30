@@ -12,3 +12,14 @@
 
 - name: Configure default shell
   ansible.builtin.include_tasks: configure_default_shell.yml
+
+- name: Upgrade all installed Homebrew formulae
+  community.general.homebrew:
+    upgrade_all: true
+  when: workstation_upgrade_packages
+
+- name: Upgrade all installed Homebrew casks including self-updating apps
+  community.general.homebrew_cask:
+    upgrade_all: true
+    greedy: true
+  when: workstation_upgrade_packages

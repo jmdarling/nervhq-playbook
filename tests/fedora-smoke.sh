@@ -22,7 +22,7 @@ from pathlib import Path
 import yaml
 catalog = yaml.safe_load(Path('inventory/group_vars/all/applications.yml').read_text())
 applications = [item for item in catalog['applications']
-                if item.get('fedora', {}).get('source') == 'dnf']
+                if item.get('fedora', {}).get('source') in ['dnf', 'release_rpm']]
 Path('/tmp/smoke-vars.yml').write_text(yaml.safe_dump({'applications': applications}))
 PYVARS
 ansible-playbook local-fedora.yml -e @/tmp/smoke-vars.yml

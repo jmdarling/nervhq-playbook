@@ -46,8 +46,17 @@ class Readiness(unittest.TestCase):
         for name in ['applications', 'cli_tools', 'fonts']:
             self.assertGreater(len(host[name]), 0)
         self.assertEqual(host['ansible_connection'], 'local')
+        self.assertTrue(host['workstation_upgrade_packages'])
+        apps = {item['name']: item for item in host['applications']}
+        self.assertNotIn('codex', apps)
+        self.assertNotIn('codex-app', apps)
+        self.assertNotIn('firefox', apps)
+        self.assertEqual(apps['brave-origin']['fedora']['source'], 'dnf')
+        self.assertEqual(apps['steam']['macos']['source'], 'brew')
+        self.assertEqual(apps['balenaetcher']['fedora']['source'], 'release_rpm')
+        self.assertEqual(apps['discord']['fedora']['name'], 'dev.vencord.Vesktop')
 
-    def test_catalog_sources_and_script_markers(self):
+    def test_catalog_sources_and_script_files(self):
         catalogs = [yaml.safe_load(p.read_text()) for p in
                     (ROOT / 'inventory/group_vars/all').glob('*.yml')]
         for catalog in catalogs:
@@ -60,7 +69,6 @@ class Readiness(unittest.TestCase):
                         if config.get('source') == 'script':
                             self.assertTrue((ROOT / 'roles' / platform / 'files' /
                                              config['script_name']).is_file())
-                            self.assertTrue(config.get('creates'))
                         if config.get('source') == 'dnf':
                             self.assertNotIn('.', config.get('name', item['name']))
 

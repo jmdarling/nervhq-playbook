@@ -4,14 +4,6 @@ applications:
     macos:
       source: brew
 
-  - name: codex
-    macos:
-      source: brew
-
-  - name: codex-app
-    macos:
-      source: brew
-
   # Communication
   - name: discord
     fedora:
@@ -31,6 +23,8 @@ applications:
 
   # Development Tools
   - name: balenaetcher
+    fedora:
+      source: release_rpm
     macos:
       source: brew
   - name: ghostty
@@ -51,6 +45,8 @@ applications:
     fedora:
       name: com.valvesoftware.Steam
       source: flatpak
+    macos:
+      source: brew
 
   # Password Management
   - name: 1password
@@ -80,9 +76,8 @@ applications:
       source: brew
 
   # Web Browsers
-  - name: firefox
+  - name: brave-origin
     fedora:
-      name: app.zen_browser.zen
-      source: flatpak
+      source: dnf
     macos:
       source: brew

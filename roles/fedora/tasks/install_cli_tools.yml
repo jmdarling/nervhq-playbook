@@ -21,14 +21,12 @@
     - item.fedora.source == 'dnf'
   ansible.builtin.dnf5:
     name: "{{ item.fedora.name | default(item.name) }}"
-    state: present # DNF packages will be updated holistically in a separate task.
+    state: "{{ 'latest' if workstation_upgrade_packages else 'present' }}"
   become: true
 
-- name: Install command line tools via script
+- name: Install or upgrade verified releases
+  ansible.builtin.include_tasks: ../../common/tasks/install_release.yml
   loop: "{{ cli_tools }}"
   when:
     - item.fedora is defined
     - item.fedora.source == 'script'
-  ansible.builtin.script:
-    cmd: "{{ item.fedora.script_name }}"
-    creates: "{{ item.fedora.creates }}"

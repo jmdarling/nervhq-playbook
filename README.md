@@ -10,7 +10,7 @@ GPU drivers, gaming hardware, or dotfiles beyond the user-tool PATH block.
 
 | Target | Prerequisites | Coverage |
 | --- | --- | --- |
-| Fedora 44 x86_64, mutable Workstation | Python 3.14, sudo, Git; working official repositories | CI container smoke: real DNF5/bootstrap, native/COPR/vendor packages, user Flathub remote, CLI tools, pinned installers, fonts; two runs |
+| Fedora 44 x86_64, mutable Workstation | Python 3.14, sudo, Git; working official repositories | CI container smoke: real DNF5/bootstrap, native/COPR/vendor packages, user Flathub remote, CLI tools, verified release installers, fonts; two runs |
 | Apple Silicon macOS | Python 3.14, Homebrew and Xcode Command Line Tools; OS supported by selected casks | Static validation and isolated failure tests; full Homebrew/cask/login-shell run still needs an Apple Silicon Mac |
 
 Fedora Atomic/Silverblue/Kinoite, other distributions, Linux ARM, and Intel Macs
@@ -51,7 +51,7 @@ with the OS interpreter to access `python3-libdnf5`.
 ## Review, customize, run
 
 See the [software parity audit](docs/software-parity.md) for the Fedora/macOS
-package matrix, version/channel differences, and choices awaiting confirmation.
+package matrix, version/channel differences, and confirmed choices and remaining upstream gaps.
 
 Review `inventory/group_vars/all/{applications,cli_tools,fonts}.yml` before use.
 Each entry declares its source per OS; an absent OS entry is intentionally
@@ -76,16 +76,22 @@ ansible-playbook local-fedora.yml --ask-become-pass
 # Repeat the same command to verify convergence.
 ```
 
-Ordinary runs install missing packages (`state: present`). For deliberate package
-updates use `-e workstation_upgrade_packages=true`. Homebrew
-metadata is refreshed on each run; it is not a promise of a zero-change recap.
+Every run upgrades managed software by default. Fedora upgrades all installed
+DNF packages and selected Flatpaks; macOS upgrades installed Homebrew formulae
+and casks. Release installers resolve the latest stable version and verify its
+SHA-256. See the [exact upgrade scope and manual boundaries](docs/software-parity.md#upgrade-contract).
+Use `-e workstation_upgrade_packages=false` for reviewed archive pins and package
+installation without broad upgrades. No automatic reboot occurs.
 
-Do not use `--check` as a substitute for a disposable first-run test: prerequisites,
-new repositories and installer scripts can make a first dry run
-incomplete. Interrupted installs can be retried. If a marker binary/font already
-exists, scripts are skipped; remove the relevant marker deliberately to reinstall
-or apply a future archive pin change. The playbook does not downgrade existing
-tools or overwrite their state simply because a pin changed.
+Do not use `--check` as a substitute for a disposable first-run test. Interrupted
+installs can be retried. Release receipts track versions and installed-file hashes,
+so new versions and damaged/missing files are handled without deleting markers.
+
+Brave Origin needs license activation on macOS. Proton Drive's official Linux
+CLI is not a desktop sync replacement and is not selected pending your choice.
+ChatGPT's official Fedora preview currently requires the documented upstream
+manual bootstrap; automatic installation awaits verified signing metadata.
+After running on macOS, apply OS/App Store updates in System Settings/App Store.
 
 ## Package sources and user tools
 
@@ -99,15 +105,15 @@ tools or overwrite their state simply because a pin changed.
 - macOS distinguishes Homebrew casks from formulae (Syncthing is a formula).
   Homebrew and casks may impose stricter OS requirements; inspect their current
   metadata before running. Services such as Syncthing are installed, not started.
-- Volta **2.0.2**, Fedora Starship **1.24.2**, and Fira Code Nerd Font **3.4.0**
-  download fixed release archives and verify embedded SHA-256 digests before
-  extraction. No remote shell installer is executed. Volta goes to `~/.volta/bin`
-  and Starship to `~/.local/bin`, without sudo. A managed `.zshrc` block adds both
-  directories to PATH. Starship prompt initialization is optional and not added.
-- Binary/Font pins are reproducible downloads, not a lock of the whole workstation:
-  DNF, Flatpak, Homebrew and COPR remain moving repositories.
-  Before updating a pin, inspect the upstream release and independently verify
-  the archive digest, then run the archive and container tests.
+- Volta, Fedora Starship and Nerd Fonts use verified stable release archives.
+  No remote shell installer is executed. Volta goes to `~/.volta/bin` and
+  Starship to `~/.local/bin`; a managed `.zshrc` block adds both to PATH.
+  Starship prompt initialization is not added.
+- Fedora Etcher uses its official RPM after SHA-256 verification; macOS uses its
+  cask. Brave Origin uses its official signed Fedora repository and distinct cask.
+- Release metadata, fallback checksums, and installed-file receipts preserve
+  integrity and traceability while allowing upgrades; they do not lock all OS
+  packages. See the parity audit for failure behavior and trust boundaries.
 
 Sources: [Ansible Flatpak scope](https://docs.ansible.com/projects/ansible/latest/collections/community/general/flatpak_module.html),
 [DNF5 requirements](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/dnf5_module.html),
