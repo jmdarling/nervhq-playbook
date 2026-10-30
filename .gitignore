@@ -53,3 +53,8 @@ Temporary Items
 *.icloud
 
 # End of https://www.toptal.com/developers/gitignore/api/ansible,macos,linux
+
+# Local validation dependencies and caches
+.ansible/
+.venv/
+__pycache__/

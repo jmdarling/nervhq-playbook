@@ -1,6 +1,6 @@
 - name: Upgrade packages and package manager cache using DNF
   ansible.builtin.dnf:
     name: "*"
-    state: latest
-    update_cache: yes
+    state: latest # noqa: package-latest -- this task intentionally upgrades all packages
+    update_cache: true
   become: true

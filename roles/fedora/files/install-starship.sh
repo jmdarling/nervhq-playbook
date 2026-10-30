@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Install Volta Node.js version manager
-# Based on: https://volta.sh/
-
+# Install Starship from the official installer.
 set -euo pipefail
 
-# Download and run the Volta installer
-curl -sS https://starship.rs/install.sh | sh -s -- -y
+installer=$(mktemp)
+trap 'rm -f "$installer"' EXIT
+curl --fail --silent --show-error --location https://starship.rs/install.sh -o "$installer"
+sh "$installer" -y

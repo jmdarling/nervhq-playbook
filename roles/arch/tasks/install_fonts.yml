@@ -18,4 +18,4 @@
     name: "{{ item.arch.name | default(item.name) }}"
     state: present # Paru packages will be updated holistically in a separate task.
   become: true
-  become_user: "{{ ansible_user_id }}"
+  become_user: aur_builder
