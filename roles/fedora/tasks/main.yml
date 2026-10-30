@@ -16,3 +16,20 @@
 
 - name: Configure default shell
   ansible.builtin.include_tasks: configure_default_shell.yml
+
+- name: List installed user Flatpak applications
+  ansible.builtin.command:
+    argv: [flatpak, list, --user, --app, --columns=application]
+  register: fedora_flatpak_apps
+  changed_when: false
+  check_mode: false
+  when: workstation_upgrade_packages
+
+- name: Upgrade all installed user Flatpak applications
+  community.general.flatpak:
+    name: "{{ fedora_flatpak_apps.stdout_lines }}"
+    state: latest
+    method: user
+  when:
+    - workstation_upgrade_packages
+    - fedora_flatpak_apps.stdout_lines | length > 0

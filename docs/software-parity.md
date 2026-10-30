@@ -46,7 +46,7 @@ profile/default-browser setting.
 
 `workstation_upgrade_packages: true` is the default. Fedora refreshes and upgrades
 all installed DNF packages (including the OS/kernel and configured third-party
-repositories), then installs/upgrades selected native and Flatpak packages.
+repositories), then installs/upgrades selected native packages and all installed user Flatpak apps.
 macOS refreshes Homebrew metadata, upgrades selected packages and all installed
 Homebrew formulae/casks; greedy cask updates include self-updating applications.
 Package-manager holds, disabled repositories, platform support, network failures,
@@ -145,7 +145,7 @@ verify bytes and installed-file manifests. This does not lock OS dependencies.
 | Shared controller | Python `==3.14.*`, ansible-core 2.21.5, ansible-lint 26.10.1, community.general 13.5.0 | Same | [Project metadata](../pyproject.toml), [collection pin](../requirements.yml), [bootstrap script](../scripts/bootstrap.sh); transitive Python dependencies are not locked |
 | Native prerequisites | Installs curl, tar, unzip, fontconfig, flatpak, gnupg2, python3-libdnf5, dnf5-plugins, perl-Digest-SHA | No matching bootstrap package list | [Fedora bootstrap](../roles/fedora/tasks/bootstrap.yml); platform implementation, not missing user-facing apps |
 | Package sources/trust | User Flathub; fingerprint-checked Microsoft/1Password/Brave keys; vendor repositories; Ghostty COPR when selected | Existing Homebrew; formula/cask resolution delegated to Homebrew | [Vendor configuration](../roles/fedora/tasks/configure_vendor_repositories.yml); RPM package GPG checks enabled; repo metadata checks enabled for 1Password, disabled for VS Code |
-| Default upgrades | All DNF packages; selected Flatpaks and release installers | All installed Homebrew formulae/casks; Volta latest stable | [Settings](../inventory/group_vars/all/settings.yml), [Homebrew refresh](../roles/macos/tasks/update_package_manager_cache.yml) |
+| Default upgrades | All DNF packages; all installed user Flatpak apps and release installers | All installed Homebrew formulae/casks; Volta latest stable | [Settings](../inventory/group_vars/all/settings.yml), [Homebrew refresh](../roles/macos/tasks/update_package_manager_cache.yml) |
 | Privilege/scope | DNF/repository/shell changes use sudo; Flatpak, user tools, fonts and PATH run as desktop user | Homebrew tasks run as desktop user; login-shell change uses sudo | Platform role tasks; no global become on either entrypoint |
 | Shell/PATH | Zsh selected from PATH; managed `.zshrc` exports `VOLTA_HOME` and prepends Volta plus `~/.local/bin` | Same | [Shared configuration](../tasks/user_environment.yml); no Starship/zoxide/fzf initialization or Homebrew `shellenv` setup |
 | Services/accounts | No explicit service enable/start or application-login tasks | Same | Role task lists; package-manager postinstall side effects are outside this guarantee |

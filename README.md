@@ -77,7 +77,7 @@ ansible-playbook local-fedora.yml --ask-become-pass
 ```
 
 Every run upgrades managed software by default. Fedora upgrades all installed
-DNF packages and selected Flatpaks; macOS upgrades installed Homebrew formulae
+DNF packages and all installed user Flatpak apps; macOS upgrades installed Homebrew formulae
 and casks. Release installers resolve the latest stable version and verify its
 SHA-256. See the [exact upgrade scope and manual boundaries](docs/software-parity.md#upgrade-contract).
 Use `-e workstation_upgrade_packages=false` for reviewed archive pins and package
