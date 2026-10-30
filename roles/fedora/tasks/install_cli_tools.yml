@@ -4,9 +4,12 @@
     - item.fedora is defined
     - item.fedora.source == 'dnf'
     - item.fedora.copr is defined
-  community.general.copr:
-    name: "{{ item.fedora.copr }}"
-    state: enabled
+  # community.general.copr requires DNF4's Python bindings; use COPR's repo file with DNF5.
+  ansible.builtin.get_url:
+    url: >-
+      https://copr.fedorainfracloud.org/coprs/{{ item.fedora.copr }}/repo/fedora-{{ ansible_facts.distribution_major_version }}/dnf.repo?arch={{ ansible_facts.architecture }}
+    dest: "/etc/yum.repos.d/_copr:copr.fedorainfracloud.org:{{ item.fedora.copr | replace('/', ':') }}.repo"
+    mode: "0644"
   become: true
 
 - name: Install command line tools via DNF
