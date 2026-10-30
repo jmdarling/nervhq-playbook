@@ -1,12 +1,12 @@
 fonts:
-  - name: fire-code-nerd-font
+  - name: fira-code-nerd-font
     arch:
       source: pacman
       name: ttf-firacode-nerd
     fedora:
       source: script
       script_name: install-fira-code-nerd-font.sh
-      creates: "{{ ansible_env.HOME }}/.local/share/fonts/FiraCodeNerdFont-Regular.ttf"
+      creates: "{{ ansible_facts.env.HOME }}/.local/share/fonts/.nervhq-firacode-3.4.0"
     macos:
       source: brew
       name: font-fira-code-nerd-font

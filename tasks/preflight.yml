@@ -1,0 +1,51 @@
+- name: Require a supported controller and an unprivileged workstation user
+  ansible.builtin.assert:
+    that:
+      - ansible_playbook_python is defined
+      - ansible_facts.python.version.major == 3
+      - ansible_facts.python.version.minor == 14
+      - ansible_facts.user_uid != 0
+      - ansible_facts.env.HOME != '/root'
+      - >-
+        (workstation_os == 'arch' and ansible_facts.distribution == 'Archlinux' and ansible_facts.architecture == 'x86_64') or
+        (workstation_os == 'fedora' and ansible_facts.distribution == 'Fedora' and ansible_facts.distribution_major_version == '44'
+         and ansible_facts.architecture == 'x86_64') or
+        (workstation_os == 'macos' and ansible_facts.system == 'Darwin' and ansible_facts.architecture == 'arm64')
+    fail_msg: >-
+      Run as your desktop user with Python 3.14. Targets are Arch x86_64,
+      Fedora 44 x86_64 (DNF, not Atomic), and Apple Silicon macOS with Homebrew.
+      See README.md for prerequisites and validation limits.
+
+- name: Validate package source configuration before changing the workstation
+  ansible.builtin.assert:
+    that:
+      - item[workstation_os].source in workstation_sources[workstation_os]
+      - item[workstation_os].source != 'script' or item[workstation_os].script_name is defined
+      - item[workstation_os].source != 'script' or item[workstation_os].creates is defined
+    fail_msg: "Invalid package source for {{ item.name }} on {{ workstation_os }}"
+  vars:
+    workstation_sources:
+      arch: [pacman, paru, flatpak, script]
+      fedora: [dnf, flatpak, script]
+      macos: [brew, brew_formula, script]
+  loop: "{{ applications + cli_tools + fonts }}"
+  when: item[workstation_os] is defined
+
+- name: Check preinstalled package manager
+  ansible.builtin.command:
+    argv: "{{ ['paru', '--version'] if workstation_os == 'arch' else ['brew', '--version'] }}"
+  changed_when: false
+  check_mode: false
+  when: workstation_os in ['arch', 'macos']
+
+- name: Detect Fedora Atomic
+  ansible.builtin.stat:
+    path: /run/ostree-booted
+  register: workstation_ostree
+  when: workstation_os == 'fedora'
+
+- name: Require mutable Fedora
+  ansible.builtin.assert:
+    that: not workstation_ostree.stat.exists
+    fail_msg: Fedora Atomic is not supported by this DNF playbook.
+  when: workstation_os == 'fedora'

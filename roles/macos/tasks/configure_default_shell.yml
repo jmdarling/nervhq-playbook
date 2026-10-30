@@ -6,5 +6,5 @@
 - name: Set Zsh as default shell
   become: true
   ansible.builtin.user:
-    name: "{{ ansible_user_id }}"
+    name: "{{ ansible_facts.user_id }}"
     shell: "{{ macos_zsh_path_result.stdout }}"

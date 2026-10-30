@@ -5,7 +5,7 @@
     - item.macos.source == 'brew'
   community.general.homebrew:
     name: "{{ item.macos.name | default(item.name) }}"
-    state: latest
+    state: "{{ 'latest' if workstation_upgrade_packages else 'present' }}"
   become: false
 
 - name: Install command line tools via script

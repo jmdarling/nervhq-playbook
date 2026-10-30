@@ -58,3 +58,7 @@ Temporary Items
 .ansible/
 .venv/
 __pycache__/
+
+# Python tooling package build metadata
+*.egg-info/
+build/

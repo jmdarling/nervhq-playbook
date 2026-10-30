@@ -14,7 +14,7 @@
   when:
     - item.fedora is defined
     - item.fedora.source == 'dnf'
-  ansible.builtin.dnf:
+  ansible.builtin.dnf5:
     name: "{{ item.fedora.name | default(item.name) }}"
     state: present # DNF packages will be updated holistically in a separate task.
   become: true
@@ -26,7 +26,9 @@
     - item.fedora.source == 'flatpak'
   community.general.flatpak:
     name: "{{ item.fedora.name | default(item.name) }}"
-    state: latest # Flatpak packages will be updated piecemeal.
+    state: "{{ 'latest' if workstation_upgrade_packages else 'present' }}"
+    method: user
+    remote: flathub
   become: false
 
 - name: Install applications via shell script

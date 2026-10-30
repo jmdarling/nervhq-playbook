@@ -1,0 +1,2 @@
+# Opt in to upgrades; ordinary runs install missing packages only.
+workstation_upgrade_packages: false

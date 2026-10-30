@@ -1,0 +1,14 @@
+- name: Install Arch prerequisites with a full repository upgrade
+  become: true
+  community.general.pacman:
+    name: [base-devel, git, curl, tar, unzip, flatpak, gnupg, perl, acl]
+    state: present
+    update_cache: true
+    upgrade: true # Arch does not support partial upgrades.
+
+- name: Configure user Flathub remote
+  community.general.flatpak_remote:
+    name: flathub
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: user
+    state: present

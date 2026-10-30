@@ -16,7 +16,7 @@ applications:
   - name: discord
     arch:
       name: dev.vencord.Vesktop
-      source: paru
+      source: flatpak
     fedora:
       name: dev.vencord.Vesktop
       source: flatpak
@@ -33,7 +33,7 @@ applications:
       source: dnf
     macos:
       name: syncthing
-      source: brew
+      source: brew_formula
 
   # Development Tools
   - name: balenaetcher
@@ -53,27 +53,27 @@ applications:
       name: visual-studio-code-bin
       source: paru
     fedora:
-      source: script
-      script_name: install-vscode.sh
-      creates: /usr/bin/code
+      source: dnf
+      name: code
     macos:
       source: brew
 
   # Gaming
   - name: steam
     arch:
-      source: pacman
+      name: com.valvesoftware.Steam
+      source: flatpak
     fedora:
-      source: dnf
+      name: com.valvesoftware.Steam
+      source: flatpak
 
   # Password Management
   - name: 1password
     arch:
       source: paru
     fedora:
-      source: script
-      script_name: install-1password.sh
-      creates: /usr/bin/1password
+      source: dnf
+      name: 1password
     macos:
       source: brew
 

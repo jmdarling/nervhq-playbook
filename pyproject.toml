@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nervhq-playbook-tools"
+version = "0.1.0"
+requires-python = "==3.14.*"
+dependencies = ["ansible-core==2.21.5", "ansible-lint==26.10.1"]
+
+[tool.setuptools]
+packages = []

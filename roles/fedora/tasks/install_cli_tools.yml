@@ -14,7 +14,7 @@
   when:
     - item.fedora is defined
     - item.fedora.source == 'dnf'
-  ansible.builtin.dnf:
+  ansible.builtin.dnf5:
     name: "{{ item.fedora.name | default(item.name) }}"
     state: present # DNF packages will be updated holistically in a separate task.
   become: true

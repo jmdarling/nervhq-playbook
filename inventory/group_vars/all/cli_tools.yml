@@ -14,15 +14,15 @@ cli_tools:
     arch:
       source: script
       script_name: install-volta.sh
-      creates: "{{ ansible_env.HOME }}/.volta"
+      creates: "{{ ansible_facts.env.HOME }}/.volta/bin/volta"
     fedora:
       source: script
       script_name: install-volta.sh
-      creates: "{{ ansible_env.HOME }}/.volta"
+      creates: "{{ ansible_facts.env.HOME }}/.volta/bin/volta"
     macos:
       source: script
       script_name: install-volta.sh
-      creates: "{{ ansible_env.HOME }}/.volta"
+      creates: "{{ ansible_facts.env.HOME }}/.volta/bin/volta"
 
   # File & Directory Tools
   - name: fzf
@@ -54,7 +54,7 @@ cli_tools:
     fedora:
       source: script
       script_name: install-starship.sh
-      creates: "/usr/local/bin/starship"
+      creates: "{{ ansible_facts.env.HOME }}/.local/bin/starship"
     macos:
       source: brew
   - name: zsh

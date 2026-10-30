@@ -1,5 +1,9 @@
+- name: Bootstrap package sources
+  ansible.builtin.import_tasks: bootstrap.yml
+
 - name: Upgrade packages
   ansible.builtin.include_tasks: upgrade_packages.yml
+  when: workstation_upgrade_packages
 
 - name: Install CLI tools
   ansible.builtin.include_tasks: install_cli_tools.yml
