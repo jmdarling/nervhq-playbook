@@ -84,3 +84,31 @@ ansible-playbook local-fedora.yml
 ```sh
 ansible-playbook local-macos.yml
 ```
+
+## Local validation
+
+Use Python 3.14 and an isolated virtual environment:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -r requirements-dev.txt
+ansible-galaxy collection install -r requirements.yml
+ANSIBLE_BECOME_ASK_PASS=false ANSIBLE_ASK_PASS=false ansible-lint --offline
+for script in roles/*/files/*.sh; do bash -n "$script" || exit 1; done
+python -m unittest discover -s tests -v
+```
+
+These checks parse and lint the playbooks without executing workstation tasks.
+CI runs these same checks with a read-only repository token.
+
+The Arch role reserves `aur_builder` and `/etc/sudoers.d/11-install-aur_builder`
+for temporary package builds. It refuses to overwrite existing resources and
+removes resources it creates after normal task failures. An interrupted process,
+unreachable host, or invalid task definition can still prevent cleanup; inspect
+these resources manually before retrying. Do not run concurrent workstation setups.
+
+The Volta and Starship installers and Nerd Font archive still track upstream
+URLs. Downloads now fail on HTTP errors and complete before execution, but this
+is not checksum verification. Review and pin upstream releases if reproducible
+installer contents are required.

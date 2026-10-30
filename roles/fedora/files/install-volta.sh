@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Install Volta Node.js version manager
-# Based on: https://volta.sh/
-
+# Install Volta Node.js version manager from the official installer.
 set -euo pipefail
 
-# Download and run the Volta installer
-curl https://get.volta.sh | bash
+installer=$(mktemp)
+trap 'rm -f "$installer"' EXIT
+curl --fail --silent --show-error --location https://get.volta.sh -o "$installer"
+bash "$installer"
