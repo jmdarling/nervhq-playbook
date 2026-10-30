@@ -27,10 +27,7 @@
   become: true
   ansible.builtin.rpm_key:
     key: https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
-    fingerprint:
-      - DBF1A116C220B8C7164F98230686B78420038257
-      - 47D32A74E9A9E013A4B4926C68D513D36A73CD96
-      - B2A3DCA350E67256740DF904DE4EC67BE4B0DCA0
+    fingerprint: DBF1A116C220B8C7164F98230686B78420038257
     state: present
 
 - name: Configure vendor repositories before package installation
