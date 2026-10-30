@@ -14,9 +14,6 @@ applications:
 
   # Communication
   - name: discord
-    arch:
-      name: dev.vencord.Vesktop
-      source: flatpak
     fedora:
       name: dev.vencord.Vesktop
       source: flatpak
@@ -25,9 +22,6 @@ applications:
 
   # Data Management
   - name: syncthing
-    arch:
-      name: syncthing
-      source: pacman
     fedora:
       name: syncthing
       source: dnf
@@ -40,18 +34,12 @@ applications:
     macos:
       source: brew
   - name: ghostty
-    arch:
-      name: ghostty
-      source: pacman
     fedora:
       source: dnf
       copr: scottames/ghostty
     macos:
       source: brew
   - name: visual-studio-code
-    arch:
-      name: visual-studio-code-bin
-      source: paru
     fedora:
       source: dnf
       name: code
@@ -60,17 +48,12 @@ applications:
 
   # Gaming
   - name: steam
-    arch:
-      name: com.valvesoftware.Steam
-      source: flatpak
     fedora:
       name: com.valvesoftware.Steam
       source: flatpak
 
   # Password Management
   - name: 1password
-    arch:
-      source: paru
     fedora:
       source: dnf
       name: 1password
@@ -79,9 +62,6 @@ applications:
 
   # Productivity
   - name: obsidian
-    arch:
-      name: md.obsidian.Obsidian
-      source: flatpak
     fedora:
       name: md.obsidian.Obsidian
       source: flatpak
@@ -93,9 +73,6 @@ applications:
     macos:
       source: brew
   - name: proton-mail
-    arch:
-      name: me.proton.Mail
-      source: flatpak
     fedora:
       name: me.proton.Mail
       source: flatpak
@@ -104,9 +81,6 @@ applications:
 
   # Web Browsers
   - name: firefox
-    arch:
-      name: app.zen_browser.zen
-      source: flatpak
     fedora:
       name: app.zen_browser.zen
       source: flatpak

@@ -4,17 +4,11 @@ cli_tools:
     macos:
       source: brew
   - name: neovim
-    arch:
-      source: pacman
     fedora:
       source: dnf
     macos:
       source: brew
   - name: volta
-    arch:
-      source: script
-      script_name: install-volta.sh
-      creates: "{{ ansible_facts.env.HOME }}/.volta/bin/volta"
     fedora:
       source: script
       script_name: install-volta.sh
@@ -26,22 +20,16 @@ cli_tools:
 
   # File & Directory Tools
   - name: fzf
-    arch:
-      source: pacman
     fedora:
       source: dnf
     macos:
       source: brew
   - name: stow
-    arch:
-      source: pacman
     fedora:
       source: dnf
     macos:
       source: brew
   - name: zoxide
-    arch:
-      source: pacman
     fedora:
       source: dnf
     macos:
@@ -49,8 +37,6 @@ cli_tools:
 
   # Shell & Terminal Enhancement
   - name: starship
-    arch:
-      source: pacman
     fedora:
       source: script
       script_name: install-starship.sh
@@ -58,15 +44,11 @@ cli_tools:
     macos:
       source: brew
   - name: zsh
-    arch:
-      source: pacman
     fedora:
       source: dnf
 
   # System Information
   - name: fastfetch
-    arch:
-      source: pacman
     fedora:
       source: dnf
     macos:

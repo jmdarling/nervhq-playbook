@@ -7,13 +7,11 @@
       - ansible_facts.user_uid != 0
       - ansible_facts.env.HOME != '/root'
       - >-
-        (workstation_os == 'arch' and ansible_facts.distribution == 'Archlinux' and ansible_facts.architecture == 'x86_64') or
         (workstation_os == 'fedora' and ansible_facts.distribution == 'Fedora' and ansible_facts.distribution_major_version == '44'
          and ansible_facts.architecture == 'x86_64') or
         (workstation_os == 'macos' and ansible_facts.system == 'Darwin' and ansible_facts.architecture == 'arm64')
     fail_msg: >-
-      Run as your desktop user with Python 3.14. Targets are Arch x86_64,
-      Fedora 44 x86_64 (DNF, not Atomic), and Apple Silicon macOS with Homebrew.
+      Run as your desktop user with Python 3.14. Targets are Fedora 44 x86_64 (DNF, not Atomic), and Apple Silicon macOS with Homebrew.
       See README.md for prerequisites and validation limits.
 
 - name: Validate package source configuration before changing the workstation
@@ -25,18 +23,17 @@
     fail_msg: "Invalid package source for {{ item.name }} on {{ workstation_os }}"
   vars:
     workstation_sources:
-      arch: [pacman, paru, flatpak, script]
       fedora: [dnf, flatpak, script]
       macos: [brew, brew_formula, script]
   loop: "{{ applications + cli_tools + fonts }}"
   when: item[workstation_os] is defined
 
-- name: Check preinstalled package manager
+- name: Check preinstalled Homebrew
   ansible.builtin.command:
-    argv: "{{ ['paru', '--version'] if workstation_os == 'arch' else ['brew', '--version'] }}"
+    argv: [brew, --version]
   changed_when: false
   check_mode: false
-  when: workstation_os in ['arch', 'macos']
+  when: workstation_os == 'macos'
 
 - name: Detect Fedora Atomic
   ansible.builtin.stat:
