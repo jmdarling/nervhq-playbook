@@ -9,7 +9,7 @@ GPU drivers, gaming hardware, or dotfiles beyond the user-tool PATH block.
 
 | Target | Prerequisites | Coverage |
 | --- | --- | --- |
-| Fedora 44 x86_64, mutable Workstation | Python 3.14, sudo, Git; working official repositories | CI container smoke: real DNF5/bootstrap, signed vendor repositories, user Flathub remote, Zsh, fzf, Volta, Starship, fonts; two runs |
+| Fedora 44 x86_64, mutable Workstation | Python 3.14, sudo, Git; working official repositories | CI container smoke: real DNF5/bootstrap, native/COPR/vendor packages, user Flathub remote, CLI tools, pinned installers, fonts; two runs |
 | Arch Linux x86_64 | Python 3.14 controller, sudo, working Pacman mirrors, preinstalled Paru | Static validation and isolated failure tests; full AUR/desktop run still needs a disposable Arch VM |
 | Apple Silicon macOS | Python 3.14, Homebrew and Xcode Command Line Tools; OS supported by selected casks | Static validation and isolated failure tests; full Homebrew/cask/login-shell run still needs an Apple Silicon Mac |
 
@@ -21,7 +21,7 @@ Python versions before installing tools. Do not upgrade this constraint until
 Ansible supports the new controller and all checks pass.
 
 CI does not establish that GUI apps launch or that a real login/session works.
-The Fedora container smoke deliberately excludes GUI applications and COPR.
+The Fedora container smoke excludes Flatpak application installation and GUI launches.
 Before using a whole catalog, run twice in a disposable desktop VM/Mac and test
 application launches, log out/in, and confirm the intended login shell and PATH.
 
@@ -143,7 +143,8 @@ python -m unittest discover -s tests -v
 ```
 
 Tests use temporary homes, fake failed/corrupt downloads, inventory loading,
-preflight refusal, and actual Ansible repeat runs on isolated user configuration.
+preflight refusal, real AUR block/always orchestration with file-backed resource
+fixtures, and actual Ansible repeat runs on isolated user configuration.
 They do not run the workstation roles against your machine. CI additionally runs
 `tests/fedora-smoke.sh` **inside a disposable Fedora container**; never invoke
 that script on a host. It installs tools/packages and creates a test user only

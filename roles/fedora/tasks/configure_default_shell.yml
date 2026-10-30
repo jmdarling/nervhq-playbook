@@ -1,6 +1,6 @@
 ---
 - name: Get path to zsh
-  ansible.builtin.command: which zsh
+  ansible.builtin.shell: command -v zsh # noqa: command-instead-of-shell -- command is a shell builtin
   register: fedora_zsh_path_result
   changed_when: false
 

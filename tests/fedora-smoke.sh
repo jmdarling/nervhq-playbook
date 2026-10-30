@@ -14,28 +14,17 @@ cd /home/tester/playbook
 python3 --version
 PYTHON=python3 bash scripts/bootstrap.sh
 export PATH="$PWD/.venv/bin:$PATH"
-# Exercise real DNF5/bootstrap, user Flatpak remote, shell, pinned user installers
-# and font extraction. GUI apps/COPR are intentionally outside this smoke test.
-cat > /tmp/smoke-vars.yml <<'VARS'
-applications: []
-cli_tools:
-  - name: zsh
-    fedora:
-      source: dnf
-  - name: fzf
-    fedora:
-      source: dnf
-  - name: volta
-    fedora:
-      source: script
-      script_name: install-volta.sh
-      creates: "{{ ansible_facts.env.HOME }}/.volta/bin/volta"
-  - name: starship
-    fedora:
-      source: script
-      script_name: install-starship.sh
-      creates: "{{ ansible_facts.env.HOME }}/.local/bin/starship"
-VARS
+# Exercise all configured native Fedora packages (including COPR/vendor packages),
+# user installers/fonts, and user Flathub configuration. Flatpak application
+# installation/GUI launches need a real desktop session and are excluded here.
+python - <<'PYVARS'
+from pathlib import Path
+import yaml
+catalog = yaml.safe_load(Path('inventory/group_vars/all/applications.yml').read_text())
+applications = [item for item in catalog['applications']
+                if item.get('fedora', {}).get('source') == 'dnf']
+Path('/tmp/smoke-vars.yml').write_text(yaml.safe_dump({'applications': applications}))
+PYVARS
 ansible-playbook local-fedora.yml -e @/tmp/smoke-vars.yml
 ansible-playbook local-fedora.yml -e @/tmp/smoke-vars.yml | tee /tmp/second-run.log
 grep -Eq 'changed=0[[:space:]]' /tmp/second-run.log
