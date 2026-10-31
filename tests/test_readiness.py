@@ -47,6 +47,11 @@ class Readiness(unittest.TestCase):
             self.assertGreater(len(host[name]), 0)
         self.assertEqual(host['ansible_connection'], 'local')
         self.assertTrue(host['workstation_upgrade_packages'])
+        tools = {item['name']: item for item in host['cli_tools']}
+        self.assertEqual(tools['podman'], {
+            'name': 'podman', 'fedora': {'source': 'dnf'},
+            'macos': {'source': 'brew'},
+        })
         apps = {item['name']: item for item in host['applications']}
         self.assertNotIn('codex', apps)
         self.assertNotIn('codex-app', apps)

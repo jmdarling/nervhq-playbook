@@ -51,6 +51,9 @@ all installed DNF packages (including the OS/kernel and configured third-party
 repositories), then installs/upgrades selected native packages and all installed user Flatpak apps.
 macOS refreshes Homebrew metadata, upgrades selected packages and all installed
 Homebrew formulae/casks; greedy cask updates include self-updating applications.
+Podman host packages follow these upgrades; container images, workloads and any
+macOS Podman machine guest OS are outside this policy. A host upgrade can require
+a manual guest update before use; see [Podman first use](../README.md#podman-development-tool).
 Package-manager holds, disabled repositories, platform support, network failures,
 and upstream publication delays still apply. Updates fail visibly rather than
 silently reporting freshness. New upstream releases between runs can legitimately
@@ -129,6 +132,7 @@ Sources: [CLI catalog](../inventory/group_vars/all/cli_tools.yml),
 | Entry | Fedora | macOS | Version/configuration difference |
 | --- | --- | --- | --- |
 | Git | Required before bootstrap; no Fedora catalog entry | Homebrew formula `git` | Explicit prerequisite versus managed package |
+| Podman | Official Fedora DNF `podman` | Homebrew formula `podman` | Floating package versions; native Linux versus manually initialized Linux VM; see [first use](../README.md#podman-development-tool) |
 | Neovim | DNF `neovim` | Homebrew formula `neovim` | Both floating; no editor configuration managed |
 | Volta | Verified Linux release archive, `~/.volta/bin` | Verified macOS release archive, `~/.volta/bin` | Both latest stable; different platform archives/checksums; no Node/toolchain installation |
 | fzf | DNF `fzf` | Homebrew formula `fzf` | Both floating; no shell integration configured |

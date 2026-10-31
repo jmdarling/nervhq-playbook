@@ -3,6 +3,11 @@ cli_tools:
   - name: git
     macos:
       source: brew
+  - name: podman
+    fedora:
+      source: dnf
+    macos:
+      source: brew
   - name: neovim
     fedora:
       source: dnf
