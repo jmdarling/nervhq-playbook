@@ -9,7 +9,7 @@ on macOS; upgrades enabled on every run.
 The playbook does not uninstall previously selected software or change a browser
 profile/default-browser setting.
 
-## Availability and remaining decisions
+## Confirmed selections and availability
 
 - **Brave Origin:** exact product, stable `brave-origin` RPM and cask. Linux has a
   free onboarding option; macOS requires purchase/license activation by the user.
@@ -72,7 +72,7 @@ and downloads only missing/newer versions. Its unsigned local RPM transaction
 uses the verified SHA-256 instead of RPM signature checking; no global DNF setting
 is changed. Temporary RPM downloads are removed even on install failure.
 
-`-e workstation_upgrade_packages=false` disables broad package upgrades, requests
+`-e '{"workstation_upgrade_packages": false}'` disables broad package upgrades, requests
 `present` from package managers, and resolves the reviewed archive pins instead
 of latest releases. This is a reproducibility mode, not an absolute freeze:
 missing packages still install and release scripts can converge to the reviewed pin.
@@ -84,6 +84,12 @@ plugins, Steam games, firmware, or software installed outside these managers.
 Fedora kernel updates may require a later reboot; the playbook never reboots.
 Python/Ansible controller and collection compatibility stays pinned to Python
 3.14 and the reviewed tooling versions; ordinary app updates do not change it.
+Python is the necessary Ansible execution runtime. Upstream ansible-core 2.21
+supports controller Python 3.12–3.14, while this repo selects/test-gates 3.14.
+[Renovate](../renovate.json) limits only the GitHub Actions `python` dependency to
+`>=3.14 <3.15`; patches remain allowed and other dependency updates are unaffected.
+Python 3.15 is outside that tested/supported contract, so the former upgrade PR
+is superseded by this compatibility policy, not by removing Python.
 This scope must not be described as a guarantee that every byte on a machine is
 updated. macOS system updates may require interactive owner authentication and
 remain an explicit post-run step.
@@ -146,7 +152,7 @@ verify bytes and installed-file manifests. This does not lock OS dependencies.
 | Operator prerequisites | Python 3.14, Git, sudo and working DNF repositories | Python 3.14, Git, Homebrew and Command Line Tools per README | [Bootstrap instructions](../README.md#bootstrap); installer does not provision Python/Homebrew |
 | Shared controller | Python `==3.14.*`, ansible-core 2.21.5, ansible-lint 26.10.1, community.general 13.5.0 | Same | [Project metadata](../pyproject.toml), [collection pin](../requirements.yml), [bootstrap script](../scripts/bootstrap.sh); transitive Python dependencies are not locked |
 | Native prerequisites | Installs curl, tar, unzip, fontconfig, flatpak, gnupg2, python3-libdnf5, dnf5-plugins, perl-Digest-SHA | No matching bootstrap package list | [Fedora bootstrap](../roles/fedora/tasks/bootstrap.yml); platform implementation, not missing user-facing apps |
-| Package sources/trust | User Flathub; fingerprint-checked Microsoft/1Password/Brave keys; vendor repositories; Ghostty COPR when selected | Existing Homebrew; formula/cask resolution delegated to Homebrew | [Vendor configuration](../roles/fedora/tasks/configure_vendor_repositories.yml); RPM package GPG checks enabled; repo metadata checks enabled for 1Password, disabled for VS Code |
+| Package sources/trust | User Flathub; fingerprint-checked Microsoft/1Password/Brave keys; verified OpenAI bootstrap when selected; vendor repositories; Ghostty COPR when selected | Existing Homebrew; formula/cask resolution delegated to Homebrew | [Vendor configuration](../roles/fedora/tasks/configure_vendor_repositories.yml); RPM package GPG checks enabled except checksum-verified Etcher; repo metadata checks enabled for 1Password/OpenAI, disabled for VS Code/Brave |
 | Default upgrades | All DNF packages; all installed user Flatpak apps and release installers | All installed Homebrew formulae/casks; Volta latest stable | [Settings](../inventory/group_vars/all/settings.yml), [Homebrew refresh](../roles/macos/tasks/update_package_manager_cache.yml) |
 | Privilege/scope | DNF/repository/shell changes use sudo; Flatpak, user tools, fonts and PATH run as desktop user | Homebrew tasks run as desktop user; login-shell change uses sudo | Platform role tasks; no global become on either entrypoint |
 | Shell/PATH | Zsh selected from PATH; managed `.zshrc` exports `VOLTA_HOME` and prepends Volta plus `~/.local/bin` | Same | [Shared configuration](../tasks/user_environment.yml); no Starship/zoxide/fzf initialization or Homebrew `shellenv` setup |
@@ -167,8 +173,10 @@ an entry does not uninstall software already present. The generic application
 script handlers can use sudo, but neither default application catalog selects
 that source; CLI/font scripts currently run without sudo.
 
-Bootstrap source setup is unconditional on Fedora: empty application lists do
-not suppress Flatpak prerequisites, the user Flathub remote, or vendor sources.
+Fedora baseline source setup is unconditional: empty application lists do not
+suppress Flatpak prerequisites, the user Flathub remote, or VS Code/1Password/Brave
+sources. ChatGPT bootstrap is conditional on selecting its Fedora DNF entry;
+Ghostty COPR is configured only when selected.
 On macOS, Homebrew metadata refresh and login-shell configuration still run with
 empty package lists. Both always run the shared PATH task. A custom Fedora CLI
 list must keep Zsh or ensure it already exists for the shell step.
@@ -195,7 +203,7 @@ public-key fingerprint and armored-key hash, then verifies the RPM signature in
 an isolated RPM database and checks package name/version/architecture. Only then
 are the verified key and RPM installed with sudo. DNF5 package signature checks
 remain enabled; newer installed versions are not downgraded. Temporary downloads
-and key databases are removed on success or failure. Existing installations skip
+and key databases are removed on success or failure. Existing installations with the pinned key present skip
 the bootstrap download and continue through normal DNF updates.
 
 Verified bootstrap inputs (2026-10-31, independently inspected on EVA without installation):
@@ -219,8 +227,11 @@ Verified bootstrap inputs (2026-10-31, independently inspected on EVA without in
   were independently verified. Key rotation requires explicit review; failures
   do not silently disable checks or trust a replacement key.
 
-The cloud editor cannot download these URLs (proxy HTTP 403); local tests use
-fake verification tools to exercise rejection/order/cleanup contracts. CI's
-Fedora container attempts real installation, RPM verification and two-run
-convergence. Neither this nor package inspection tests GUI launch, login,
-Wayland behavior or user data. See the CI result for the exact tested revision.
+The [implementation CI run](https://github.com/jmdarling/nervhq-playbook/actions/runs/41152587189)
+at `638bf31f0c120f7189514c98169fd05110e16f6b` passed actual Fedora download,
+verification and installation of `chatgpt-26.1027.30824-1.x86_64`, installed-file
+verification (`rpm -V`), and a second run with `changed=0, failed=0`. Lint,
+shell checks and all nine regression tests passed. Local tests use fake
+verification tools to exercise rejection/order/cleanup contracts; the local
+cloud proxy's download restriction did not prevent hosted CI validation.
+GUI launch, login, Wayland behavior, user data, and macOS runtime remain untested.

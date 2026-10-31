@@ -13,12 +13,19 @@ GPU drivers, gaming hardware, or dotfiles beyond the user-tool PATH block.
 | Fedora 44 x86_64, mutable Workstation | Python 3.14, sudo, Git; working official repositories | CI container smoke: real DNF5/bootstrap, native/COPR/vendor packages, user Flathub remote, CLI tools, verified release installers, fonts; two runs |
 | Apple Silicon macOS | Python 3.14, Homebrew and Xcode Command Line Tools; OS supported by selected casks | Static validation and isolated failure tests; full Homebrew/cask/login-shell run still needs an Apple Silicon Mac |
 
-Fedora Atomic/Silverblue/Kinoite, other distributions, Linux ARM, and Intel Macs
+Fedora Atomic/Silverblue/Kinoite, Arch Linux, other distributions, Linux ARM, and Intel Macs
 are outside this catalog's supported targets. The preflight rejects them before
 package changes. Python **3.14** is required: Ansible core 2.21.5 fails on Python
 3.15's removed `dataclasses._is_type`. Package metadata rejects incompatible
 Python versions before installing tools. Do not upgrade this constraint until
-Ansible supports the new controller and all checks pass.
+Ansible supports the new controller and all checks pass. Python is required to
+run Ansible, its modules, lint and these tests; it is not an unused application.
+The [upstream support matrix](https://docs.ansible.com/projects/ansible/latest/reference_appendices/release_and_maintenance.html)
+currently supports Python 3.12–3.14 for ansible-core 2.21; this repository deliberately
+tests only 3.14. [Renovate policy](renovate.json) keeps the CI Python dependency
+within `>=3.14 <3.15`, permitting patch releases without disabling other updates.
+The workflow selects `3.14` rather than a fixed patch. Revisit the policy together
+with project metadata, bootstrap, preflight and CI when upgrading the controller.
 
 CI does not establish that GUI apps launch or that a real login/session works.
 The Fedora container smoke excludes Flatpak application installation and GUI launches.
@@ -51,7 +58,7 @@ with the OS interpreter to access `python3-libdnf5`.
 ## Review, customize, run
 
 See the [software parity audit](docs/software-parity.md) for the Fedora/macOS
-package matrix, version/channel differences, and confirmed choices and remaining upstream gaps.
+package matrix, version/channel differences, confirmed choices, and validation limits.
 
 Review `inventory/group_vars/all/{applications,cli_tools,fonts}.yml` before use.
 Each entry declares its source per OS; an absent OS entry is intentionally
@@ -72,7 +79,8 @@ sudo password; omit it only when your existing sudo policy needs no password.
 
 ```sh
 ansible-playbook local-fedora.yml --ask-become-pass
-# or local-macos.yml
+# On macOS instead:
+# ansible-playbook local-macos.yml --ask-become-pass
 # Repeat the same command to verify convergence.
 ```
 
@@ -80,7 +88,7 @@ Every run upgrades managed software by default. Fedora upgrades all installed
 DNF packages and all installed user Flatpak apps; macOS upgrades installed Homebrew formulae
 and casks. Release installers resolve the latest stable version and verify its
 SHA-256. See the [exact upgrade scope and manual boundaries](docs/software-parity.md#upgrade-contract).
-Use `-e workstation_upgrade_packages=false` for reviewed archive pins and package
+Use `-e '{"workstation_upgrade_packages": false}'` for reviewed archive pins and package
 installation without broad upgrades. No automatic reboot occurs.
 
 Do not use `--check` as a substitute for a disposable first-run test. Interrupted
@@ -91,6 +99,8 @@ Brave Origin needs license activation on macOS. Proton Drive is intentionally
 web-only on Fedora: use https://drive.proton.me in your browser. macOS retains
 the desktop app. No Proton Drive CLI, browser shortcut, or PWA is installed.
 
+ChatGPT is the only separately selected AI app; separate Codex CLI/app packages
+are not selected. ChatGPT itself includes upstream Codex capabilities.
 ChatGPT's official Fedora preview bootstraps from a pinned, hash- and signature-verified
 RPM, then receives updates from OpenAI's signed DNF repository. See the
 [verification contract](docs/software-parity.md#chatgpt-fedora-bootstrap).
@@ -99,7 +109,8 @@ After running on macOS, apply OS/App Store updates in System Settings/App Store.
 ## Package sources and user tools
 
 - Flatpak and the Flathub remote are configured consistently in **user** scope.
-  Vesktop uses its Flatpak ID on Fedora. Steam uses Flathub to avoid
+  Vesktop on Fedora and Discord on macOS are an intentional client split.
+  Steam uses Flathub on Fedora to avoid
   undocumented Fedora RPM Fusion prerequisites. These are
   community packages; review the [Steam Flathub page](https://flathub.org/apps/com.valvesoftware.Steam).
 - Fedora uses DNF5 and installs its bindings/prerequisites. VS Code and 1Password
@@ -142,3 +153,9 @@ They do not run the workstation roles against your machine. CI additionally runs
 that script on a host. It installs tools/packages and creates a test user only
 inside that container. Workflows have read-only repository permissions and no
 deployment steps or live host access.
+
+The [verified implementation CI run](https://github.com/jmdarling/nervhq-playbook/actions/runs/41152587189)
+installed ChatGPT `26.1027.30824-1.x86_64` in a disposable Fedora container,
+verified its installed files with `rpm -V`, and completed a second full run with
+`changed=0, failed=0`. It also passed lint, shell checks and all nine tests.
+This covers package installation and convergence, not desktop launch or login.
