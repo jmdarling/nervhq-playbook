@@ -1,0 +1,12 @@
+- name: Resolve verified upstream release
+  ansible.builtin.include_tasks: resolve_release.yml
+
+- name: Install verified release when version or installed files differ
+  ansible.builtin.script:
+    cmd: "{{ playbook_dir }}/roles/{{ workstation_os }}/files/{{ item[workstation_os].script_name }}"
+  environment:
+    RELEASE_URL: "{{ common_assets[0].browser_download_url }}"
+    RELEASE_SHA256: "{{ common_digest | regex_replace('^sha256:', '') }}"
+    RELEASE_VERSION: "{{ common_release.json.tag_name }}"
+  register: common_install
+  changed_when: "'NERVHQ_CHANGED' in common_install.stdout"

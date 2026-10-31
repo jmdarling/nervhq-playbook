@@ -1,0 +1,37 @@
+- name: Resolve stable upstream release
+  ansible.builtin.uri:
+    url: >-
+      https://api.github.com/repos/{{ workstation_releases[item.name].repository }}/releases/{{
+      'latest' if workstation_upgrade_packages else 'tags/' ~ workstation_releases[item.name].pinned_tag }}
+    return_content: true
+  register: common_release
+  check_mode: false
+
+- name: Select the exact platform asset
+  ansible.builtin.set_fact:
+    common_assets: >-
+      {{ common_release.json.assets | selectattr('name', 'equalto', workstation_releases[item.name].asset) | list }}
+
+- name: Require an unambiguous stable release asset
+  ansible.builtin.assert:
+    that:
+      - not common_release.json.draft
+      - not common_release.json.prerelease
+      - common_assets | length == 1
+      - common_release.json.tag_name is match('^v?[0-9]+[.][0-9]+[.][0-9]+$')
+
+- name: Resolve release checksum
+  ansible.builtin.set_fact:
+    common_digest: >-
+      {{ common_assets[0].digest | default('', true) or
+      ('sha256:' ~ workstation_releases[item.name].fallback_sha256
+      if common_release.json.tag_name == workstation_releases[item.name].pinned_tag else '') }}
+
+- name: Require integrity metadata and official asset origin
+  ansible.builtin.assert:
+    that:
+      - common_digest is match('^sha256:[0-9a-f]{64}$')
+      - >-
+        common_assets[0].browser_download_url.startswith('https://github.com/' ~
+        workstation_releases[item.name].repository ~ '/releases/download/' ~ common_release.json.tag_name ~ '/')
+    fail_msg: Upstream release lacks a verified SHA-256 digest or has an unexpected URL. Refusing an unverified install.

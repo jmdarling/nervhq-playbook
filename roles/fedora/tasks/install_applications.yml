@@ -21,7 +21,7 @@
     - item.fedora.source == 'dnf'
   ansible.builtin.dnf5:
     name: "{{ item.fedora.name | default(item.name) }}"
-    state: present # DNF packages will be updated holistically in a separate task.
+    state: "{{ 'latest' if workstation_upgrade_packages else 'present' }}"
   become: true
 
 - name: Install applications via Flatpak
@@ -51,3 +51,10 @@
 # before the first run completes, rather than reporting a change next time.
 - name: Reconcile vendor repositories after package installation
   ansible.builtin.import_tasks: configure_vendor_repositories.yml
+
+- name: Install applications from verified upstream RPM releases
+  ansible.builtin.include_tasks: install_release_rpm.yml
+  loop: "{{ applications }}"
+  when:
+    - item.fedora is defined
+    - item.fedora.source == 'release_rpm'

@@ -22,7 +22,7 @@ from pathlib import Path
 import yaml
 catalog = yaml.safe_load(Path('inventory/group_vars/all/applications.yml').read_text())
 applications = [item for item in catalog['applications']
-                if item.get('fedora', {}).get('source') == 'dnf']
+                if item.get('fedora', {}).get('source') in ['dnf', 'release_rpm']]
 Path('/tmp/smoke-vars.yml').write_text(yaml.safe_dump({'applications': applications}))
 PYVARS
 ansible-playbook local-fedora.yml -e @/tmp/smoke-vars.yml
@@ -30,6 +30,8 @@ ansible-playbook local-fedora.yml -e @/tmp/smoke-vars.yml | tee /tmp/second-run.
 grep -Eq 'changed=0[[:space:]]' /tmp/second-run.log
 "$HOME/.volta/bin/volta" --version
 "$HOME/.local/bin/starship" --version
+rpm -q chatgpt
+rpm -V chatgpt
 fc-list | grep 'FiraCode'
 flatpak remotes --user | grep flathub
 USER

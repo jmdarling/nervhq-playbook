@@ -23,5 +23,12 @@
     - key: https://downloads.1password.com/linux/keys/1password.asc
       fingerprint: 3FEF9748469ADBE15DA7CA80AC2D62742012EA22
 
+- name: Trust Brave release signing keys
+  become: true
+  ansible.builtin.rpm_key:
+    key: https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+    fingerprint: DBF1A116C220B8C7164F98230686B78420038257
+    state: present
+
 - name: Configure vendor repositories before package installation
   ansible.builtin.import_tasks: configure_vendor_repositories.yml

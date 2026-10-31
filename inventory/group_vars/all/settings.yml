@@ -1,2 +1,2 @@
-# Opt in to upgrades; ordinary runs install missing packages only.
-workstation_upgrade_packages: false
+# Upgrade repository-managed software on every run. See docs/software-parity.md.
+workstation_upgrade_packages: true

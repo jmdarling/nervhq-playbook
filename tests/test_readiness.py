@@ -46,8 +46,17 @@ class Readiness(unittest.TestCase):
         for name in ['applications', 'cli_tools', 'fonts']:
             self.assertGreater(len(host[name]), 0)
         self.assertEqual(host['ansible_connection'], 'local')
+        self.assertTrue(host['workstation_upgrade_packages'])
+        apps = {item['name']: item for item in host['applications']}
+        self.assertNotIn('codex', apps)
+        self.assertNotIn('codex-app', apps)
+        self.assertNotIn('firefox', apps)
+        self.assertEqual(apps['brave-origin']['fedora']['source'], 'dnf')
+        self.assertEqual(apps['steam']['macos']['source'], 'brew')
+        self.assertEqual(apps['balenaetcher']['fedora']['source'], 'release_rpm')
+        self.assertEqual(apps['discord']['fedora']['name'], 'dev.vencord.Vesktop')
 
-    def test_catalog_sources_and_script_markers(self):
+    def test_catalog_sources_and_script_files(self):
         catalogs = [yaml.safe_load(p.read_text()) for p in
                     (ROOT / 'inventory/group_vars/all').glob('*.yml')]
         for catalog in catalogs:
@@ -55,13 +64,12 @@ class Readiness(unittest.TestCase):
                 if not isinstance(items, list):
                     continue
                 for item in items:
-                    for platform in ['arch', 'fedora', 'macos']:
+                    for platform in ['fedora', 'macos']:
                         config = item.get(platform, {})
                         if config.get('source') == 'script':
                             self.assertTrue((ROOT / 'roles' / platform / 'files' /
                                              config['script_name']).is_file())
-                            self.assertTrue(config.get('creates'))
-                        if config.get('source') in ['pacman', 'paru', 'dnf']:
+                        if config.get('source') == 'dnf':
                             self.assertNotIn('.', config.get('name', item['name']))
 
     def test_user_environment_is_idempotent(self):
@@ -80,43 +88,6 @@ class Readiness(unittest.TestCase):
                 self.assertIn(expected, result.stdout)
             contents = (Path(tmp) / '.zshrc').read_text()
             self.assertEqual(contents.count('export VOLTA_HOME='), 1)
-
-    def test_aur_block_cleans_up_on_success_and_failure(self):
-        # Exercise the real block/always orchestration with harmless file-backed
-        # resource tasks. This does not claim to exercise useradd, sudo, or Paru.
-        tasks = yaml.safe_load((ROOT / 'roles/arch/tasks/main.yml').read_text())
-        block = next(task for task in tasks if 'block' in task)
-        for fail in [False, True]:
-            with self.subTest(fail=fail), tempfile.TemporaryDirectory() as tmp:
-                root = Path(tmp)
-                marker = root / 'builder-resource'
-                names = ['create_aur_builder_user', 'upgrade_packages', 'install_cli_tools',
-                         'install_applications', 'install_fonts', 'configure_default_shell',
-                         'remove_aur_builder_user']
-                for name in names:
-                    if name == 'create_aur_builder_user':
-                        task = {'name': 'Create simulated resource', 'ansible.builtin.file':
-                                {'path': str(marker), 'state': 'touch', 'mode': '0600'}}
-                    elif name == 'remove_aur_builder_user':
-                        task = {'name': 'Remove simulated resource', 'ansible.builtin.file':
-                                {'path': str(marker), 'state': 'absent'}}
-                    elif name == 'install_cli_tools' and fail:
-                        task = {'name': 'Fail simulated package install',
-                                'ansible.builtin.fail': {'msg': 'Deliberate package failure'}}
-                    else:
-                        task = {'name': 'Simulate successful step',
-                                'ansible.builtin.debug': {'msg': name}}
-                    (root / (name + '.yml')).write_text(yaml.safe_dump([task]))
-                play = [{'name': 'Isolated AUR orchestration', 'hosts': 'localhost',
-                         'gather_facts': False,
-                         'vars': {'workstation_upgrade_packages': True}, 'tasks': [block]}]
-                path = root / 'test.yml'
-                path.write_text(yaml.safe_dump(play))
-                result = subprocess.run(['ansible-playbook', str(path)], cwd=ROOT,
-                                        env=self.env, capture_output=True, text=True)
-                self.assertEqual(result.returncode, 2 if fail else 0, result.stdout + result.stderr)
-                self.assertFalse(marker.exists(), result.stdout)
-                self.assertIn('Remove simulated resource', result.stdout)
 
     def test_wrong_os_fails_before_mutation(self):
         # Independent of the CI operating system: deliberately request another family.

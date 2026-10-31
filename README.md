@@ -1,6 +1,7 @@
 # nervhq-playbook
 
-Local workstation setup for desktop applications, CLI tools, fonts, and Zsh.
+Local workstation setup for Fedora x86_64 and Apple Silicon macOS: desktop
+applications, CLI tools, fonts, and Zsh.
 Run it as the desktop user, **not root**. It installs software and changes that
 user's login shell; it does not configure application accounts, sync services,
 GPU drivers, gaming hardware, or dotfiles beyond the user-tool PATH block.
@@ -9,16 +10,22 @@ GPU drivers, gaming hardware, or dotfiles beyond the user-tool PATH block.
 
 | Target | Prerequisites | Coverage |
 | --- | --- | --- |
-| Fedora 44 x86_64, mutable Workstation | Python 3.14, sudo, Git; working official repositories | CI container smoke: real DNF5/bootstrap, native/COPR/vendor packages, user Flathub remote, CLI tools, pinned installers, fonts; two runs |
-| Arch Linux x86_64 | Python 3.14 controller, sudo, working Pacman mirrors, preinstalled Paru | Static validation and isolated failure tests; full AUR/desktop run still needs a disposable Arch VM |
+| Fedora 44 x86_64, mutable Workstation | Python 3.14, sudo, Git; working official repositories | CI container smoke: real DNF5/bootstrap, native/COPR/vendor packages, user Flathub remote, CLI tools, verified release installers, fonts; two runs |
 | Apple Silicon macOS | Python 3.14, Homebrew and Xcode Command Line Tools; OS supported by selected casks | Static validation and isolated failure tests; full Homebrew/cask/login-shell run still needs an Apple Silicon Mac |
 
-Fedora Atomic/Silverblue/Kinoite, other distributions, Linux ARM, and Intel Macs
+Fedora Atomic/Silverblue/Kinoite, Arch Linux, other distributions, Linux ARM, and Intel Macs
 are outside this catalog's supported targets. The preflight rejects them before
 package changes. Python **3.14** is required: Ansible core 2.21.5 fails on Python
 3.15's removed `dataclasses._is_type`. Package metadata rejects incompatible
 Python versions before installing tools. Do not upgrade this constraint until
-Ansible supports the new controller and all checks pass.
+Ansible supports the new controller and all checks pass. Python is required to
+run Ansible, its modules, lint and these tests; it is not an unused application.
+The [upstream support matrix](https://docs.ansible.com/projects/ansible/latest/reference_appendices/release_and_maintenance.html)
+currently supports Python 3.12–3.14 for ansible-core 2.21; this repository deliberately
+tests only 3.14. [Renovate policy](renovate.json) keeps the CI Python dependency
+within `>=3.14 <3.15`, permitting patch releases without disabling other updates.
+The workflow selects `3.14` rather than a fixed patch. Revisit the policy together
+with project metadata, bootstrap, preflight and CI when upgrading the controller.
 
 CI does not establish that GUI apps launch or that a real login/session works.
 The Fedora container smoke excludes Flatpak application installation and GUI launches.
@@ -29,10 +36,7 @@ application launches, log out/in, and confirm the intended login shell and PATH.
 
 Install Python 3.14 and Git using your platform's trusted package manager. On
 Fedora 44, install `python3 python3-pip git sudo`; on macOS install `python@3.14`
-with Homebrew. On rolling Arch, use an already trusted Python 3.14 installation
-if the system Python has moved on. The isolated controller does not replace the
-OS Python. Install/review Paru before starting Arch (this playbook does not
-blindly build an AUR helper). See [Paru's instructions](https://github.com/Morganamilo/paru#installation).
+with Homebrew. The isolated controller does not replace the OS Python.
 
 Clone this repository, then from its root:
 
@@ -53,6 +57,9 @@ with the OS interpreter to access `python3-libdnf5`.
 
 ## Review, customize, run
 
+See the [software parity audit](docs/software-parity.md) for the Fedora/macOS
+package matrix, version/channel differences, confirmed choices, and validation limits.
+
 Review `inventory/group_vars/all/{applications,cli_tools,fonts}.yml` before use.
 Each entry declares its source per OS; an absent OS entry is intentionally
 skipped. You can supply replacement lists via `-e @my-workstation.yml`. Lists
@@ -72,28 +79,39 @@ sudo password; omit it only when your existing sudo policy needs no password.
 
 ```sh
 ansible-playbook local-fedora.yml --ask-become-pass
-# or local-arch.yml / local-macos.yml
+# On macOS instead:
+# ansible-playbook local-macos.yml --ask-become-pass
 # Repeat the same command to verify convergence.
 ```
 
-Ordinary runs install missing packages (`state: present`). For deliberate package
-updates use `-e workstation_upgrade_packages=true`. **Arch is an exception:** its
-bootstrap always refreshes repositories and performs a full Pacman upgrade,
-because partial upgrades are unsupported. AUR upgrades remain opt-in. Homebrew
-metadata is refreshed on each run; it is not a promise of a zero-change recap.
+Every run upgrades managed software by default. Fedora upgrades all installed
+DNF packages and all installed user Flatpak apps; macOS upgrades installed Homebrew formulae
+and casks. Release installers resolve the latest stable version and verify its
+SHA-256. See the [exact upgrade scope and manual boundaries](docs/software-parity.md#upgrade-contract).
+Use `-e '{"workstation_upgrade_packages": false}'` for reviewed archive pins and package
+installation without broad upgrades. No automatic reboot occurs.
 
-Do not use `--check` as a substitute for a disposable first-run test: prerequisites,
-new repositories, temporary users, and installer scripts can make a first dry run
-incomplete. Interrupted installs can be retried. If a marker binary/font already
-exists, scripts are skipped; remove the relevant marker deliberately to reinstall
-or apply a future archive pin change. The playbook does not downgrade existing
-tools or overwrite their state simply because a pin changed.
+Do not use `--check` as a substitute for a disposable first-run test. Interrupted
+installs can be retried. Release receipts track versions and installed-file hashes,
+so new versions and damaged/missing files are handled without deleting markers.
+
+Brave Origin needs license activation on macOS. Proton Drive is intentionally
+web-only on Fedora: use https://drive.proton.me in your browser. macOS retains
+the desktop app. No Proton Drive CLI, browser shortcut, or PWA is installed.
+
+ChatGPT is the only separately selected AI app; separate Codex CLI/app packages
+are not selected. ChatGPT itself includes upstream Codex capabilities.
+ChatGPT's official Fedora preview bootstraps from a pinned, hash- and signature-verified
+RPM, then receives updates from OpenAI's signed DNF repository. See the
+[verification contract](docs/software-parity.md#chatgpt-fedora-bootstrap).
+After running on macOS, apply OS/App Store updates in System Settings/App Store.
 
 ## Package sources and user tools
 
 - Flatpak and the Flathub remote are configured consistently in **user** scope.
-  Vesktop uses its Flatpak ID on both Linux targets. Steam uses Flathub to avoid
-  undocumented Arch multilib and Fedora RPM Fusion prerequisites. These are
+  Vesktop on Fedora and Discord on macOS are an intentional client split.
+  Steam uses Flathub on Fedora to avoid
+  undocumented Fedora RPM Fusion prerequisites. These are
   community packages; review the [Steam Flathub page](https://flathub.org/apps/com.valvesoftware.Steam).
 - Fedora uses DNF5 and installs its bindings/prerequisites. VS Code and 1Password
   use declarative vendor repositories and fingerprint-checked keys, retaining
@@ -101,15 +119,15 @@ tools or overwrite their state simply because a pin changed.
 - macOS distinguishes Homebrew casks from formulae (Syncthing is a formula).
   Homebrew and casks may impose stricter OS requirements; inspect their current
   metadata before running. Services such as Syncthing are installed, not started.
-- Volta **2.0.2**, Fedora Starship **1.24.2**, and Fira Code Nerd Font **3.4.0**
-  download fixed release archives and verify embedded SHA-256 digests before
-  extraction. No remote shell installer is executed. Volta goes to `~/.volta/bin`
-  and Starship to `~/.local/bin`, without sudo. A managed `.zshrc` block adds both
-  directories to PATH. Starship prompt initialization is optional and not added.
-- Binary/Font pins are reproducible downloads, not a lock of the whole workstation:
-  DNF, Pacman, AUR, Flatpak, Homebrew and COPR remain moving repositories.
-  Before updating a pin, inspect the upstream release and independently verify
-  the archive digest, then run the archive and container tests.
+- Volta, Fedora Starship and Nerd Fonts use verified stable release archives.
+  No remote shell installer is executed. Volta goes to `~/.volta/bin` and
+  Starship to `~/.local/bin`; a managed `.zshrc` block adds both to PATH.
+  Starship prompt initialization is not added.
+- Fedora Etcher uses its official RPM after SHA-256 verification; macOS uses its
+  cask. Brave Origin uses its official signed Fedora repository and distinct cask.
+- Release metadata, fallback checksums, and installed-file receipts preserve
+  integrity and traceability while allowing upgrades; they do not lock all OS
+  packages. See the parity audit for failure behavior and trust boundaries.
 
 Sources: [Ansible Flatpak scope](https://docs.ansible.com/projects/ansible/latest/collections/community/general/flatpak_module.html),
 [DNF5 requirements](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/dnf5_module.html),
@@ -118,20 +136,6 @@ Sources: [Ansible Flatpak scope](https://docs.ansible.com/projects/ansible/lates
 [Volta release](https://github.com/volta-cli/volta/releases/tag/v2.0.2),
 [Starship release](https://github.com/starship/starship/releases/tag/v1.24.2),
 [Nerd Fonts release/checksums](https://github.com/ryanoasis/nerd-fonts/releases/tag/v3.4.0).
-
-## Arch temporary builder
-
-The Arch role reserves `aur_builder` and `/etc/sudoers.d/11-install-aur_builder`.
-It refuses existing resources, creates a temporary account with Pacman-only sudo,
-imports the fingerprint-verified 1Password AUR key, and removes its account,
-home/keyring and sudoers access after normal task failures. Account creation and
-cleanup are real changes and are reported honestly on every Arch run. AUR build
-recipes execute as that temporary account and must be trusted/reviewed by the
-operator; no AUR recipes are built in CI.
-
-Do not run concurrent setups. Interruption, an unreachable host, or an invalid
-task definition can still prevent cleanup. Inspect those reserved resources
-before retrying; do not delete a pre-existing account blindly.
 
 ## Validation
 
@@ -143,10 +147,15 @@ python -m unittest discover -s tests -v
 ```
 
 Tests use temporary homes, fake failed/corrupt downloads, inventory loading,
-preflight refusal, real AUR block/always orchestration with file-backed resource
-fixtures, and actual Ansible repeat runs on isolated user configuration.
+preflight refusal, and actual Ansible repeat runs on isolated user configuration.
 They do not run the workstation roles against your machine. CI additionally runs
 `tests/fedora-smoke.sh` **inside a disposable Fedora container**; never invoke
 that script on a host. It installs tools/packages and creates a test user only
 inside that container. Workflows have read-only repository permissions and no
 deployment steps or live host access.
+
+The [verified implementation CI run](https://github.com/jmdarling/nervhq-playbook/actions/runs/41152587189)
+installed ChatGPT `26.1027.30824-1.x86_64` in a disposable Fedora container,
+verified its installed files with `rpm -V`, and completed a second full run with
+`changed=0, failed=0`. It also passed lint, shell checks and all nine tests.
+This covers package installation and convergence, not desktop launch or login.

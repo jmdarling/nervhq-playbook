@@ -1,0 +1,16 @@
+- name: Resolve verified upstream RPM
+  ansible.builtin.include_tasks: ../../common/tasks/resolve_release.yml
+
+- name: Inspect installed Etcher version
+  ansible.builtin.command:
+    argv: [rpm, -q, --queryformat, "%{VERSION}", balena-etcher]
+  register: fedora_etcher_version
+  changed_when: false
+  failed_when: fedora_etcher_version.rc not in [0, 1]
+  check_mode: false
+
+- name: Install missing or newer Etcher release
+  ansible.builtin.include_tasks: install_release_rpm_payload.yml
+  when: >-
+    fedora_etcher_version.rc != 0 or
+    fedora_etcher_version.stdout is version(common_release.json.tag_name | regex_replace('^v', ''), '<')

@@ -1,0 +1,23 @@
+workstation_releases:
+  volta:
+    repository: volta-cli/volta
+    pinned_tag: v2.0.2
+    asset: "volta-{{ common_release.json.tag_name | regex_replace('^v', '') }}-{{ 'linux' if workstation_os == 'fedora' else 'macos' }}.tar.gz"
+    fallback_sha256: >-
+      {{ '6cec054c911fb925b629a09455775af6e95dc0f5694a4c28b63979ab9ef18037' if workstation_os == 'fedora' else
+      '57f7b51d6fb975f5c48b5ddf68f75103055e19fd822e3e2ce58d2be6ab78977d' }}
+  starship:
+    repository: starship/starship
+    pinned_tag: v1.24.2
+    asset: starship-x86_64-unknown-linux-musl.tar.gz
+    fallback_sha256: 00ff3c1f8ffb59b5c15d4b44c076bcca04d92cf0055c86b916248c14f3ae714a
+  fira-code-nerd-font:
+    repository: ryanoasis/nerd-fonts
+    pinned_tag: v3.4.0
+    asset: FiraCode.zip
+    fallback_sha256: 7cc4ffd8f7a1fc914cdab7b149808298165ff7a7f40e40d82dea9ebe41e8ca0b
+  balenaetcher:
+    repository: balena-io/etcher
+    pinned_tag: v2.1.9
+    asset: "balena-etcher-{{ common_release.json.tag_name | regex_replace('^v', '') }}-1.x86_64.rpm"
+    fallback_sha256: 7921555a7e3bdd7a2d020574d237a0aade2a112d9132ceb53af1f703abd9212d
