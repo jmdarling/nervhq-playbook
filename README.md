@@ -137,6 +137,51 @@ Sources: [Ansible Flatpak scope](https://docs.ansible.com/projects/ansible/lates
 [Starship release](https://github.com/starship/starship/releases/tag/v1.24.2),
 [Nerd Fonts release/checksums](https://github.com/ryanoasis/nerd-fonts/releases/tag/v3.4.0).
 
+## Podman development tool
+
+The CLI catalog installs Fedora's native `podman` package and the Apple Silicon
+Homebrew **formula** `podman`, using the existing package upgrade policy.
+[Fedora/upstream installation instructions](https://podman.io/docs/installation)
+and the [Homebrew formula](https://formulae.brew.sh/formula/podman) describe these
+sources. Upstream recommends its macOS installer over community-maintained
+Homebrew; this repository uses Homebrew consistently with its other CLI tools.
+
+After installation, `podman --version` and `podman --help` check the CLI without
+starting a workload. The playbook does not create/start machines or containers,
+enable services/sockets, install Podman Desktop or Docker compatibility, or
+modify user groups, subordinate ID ranges, networking or security settings.
+
+On Fedora, use Podman as your desktop user. Before first use, confirm that
+`/etc/subuid` and `/etc/subgid` contain valid, non-overlapping ranges for that user,
+that `newuidmap`/`newgidmap` are available, and that user namespaces are permitted.
+Rootless networking needs `pasta` (Fedora's `passt` package); keep normal DNF
+runtime dependencies enabled. Local container storage is needed: NFS-backed
+storage is unsupported. Resolve missing prerequisites with the administrator
+rather than changing security policy or inventing UID ranges in this playbook.
+See [upstream rootless requirements](https://docs.podman.io/en/latest/markdown/podman.1.html#rootless-mode).
+After that review, run `podman info` manually to validate the host environment.
+
+On macOS, container execution requires a Linux VM. When ready to allocate VM
+resources and download its image, run these commands yourself as your normal user:
+
+```sh
+podman machine init
+podman machine start
+podman info
+# Stop it when finished:
+podman machine stop
+```
+
+Homebrew upgrades the host CLI, not an existing VM's guest OS or container images.
+Review the [machine update instructions](https://docs.podman.io/en/latest/markdown/podman-machine-init.1.html)
+after host upgrades: mismatched host/guest Podman versions are unsupported.
+VM updates, image refreshes, registry login, Compose providers and development
+workloads remain manual. No VM is needed for native Fedora container execution.
+
+The Fedora smoke script includes CLI version/help checks and two package runs;
+these checks validate installation and convergence, not rootless workload
+execution. No container workload or macOS VM test is claimed.
+
 ## Validation
 
 ```sh

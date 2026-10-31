@@ -30,6 +30,9 @@ ansible-playbook local-fedora.yml -e @/tmp/smoke-vars.yml | tee /tmp/second-run.
 grep -Eq 'changed=0[[:space:]]' /tmp/second-run.log
 "$HOME/.volta/bin/volta" --version
 "$HOME/.local/bin/starship" --version
+# CLI checks only: do not create containers, machines, sockets or user namespaces.
+podman --version
+podman --help >/dev/null
 rpm -q chatgpt
 rpm -V chatgpt
 fc-list | grep 'FiraCode'
