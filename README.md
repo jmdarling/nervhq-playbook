@@ -87,8 +87,10 @@ Do not use `--check` as a substitute for a disposable first-run test. Interrupte
 installs can be retried. Release receipts track versions and installed-file hashes,
 so new versions and damaged/missing files are handled without deleting markers.
 
-Brave Origin needs license activation on macOS. Proton Drive's official Linux
-CLI is not a desktop sync replacement and is not selected pending your choice.
+Brave Origin needs license activation on macOS. Proton Drive is intentionally
+web-only on Fedora: use https://drive.proton.me in your browser. macOS retains
+the desktop app. No Proton Drive CLI, browser shortcut, or PWA is installed.
+
 ChatGPT's official Fedora preview currently requires the documented upstream
 manual bootstrap; automatic installation awaits verified signing metadata.
 After running on macOS, apply OS/App Store updates in System Settings/App Store.

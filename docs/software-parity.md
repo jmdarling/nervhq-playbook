@@ -1,10 +1,11 @@
 # Fedora and macOS software parity audit
 
-Audited 2026-10-30 against the two-target repository tree in this PR. This is an
+Audited 2026-10-31 against the two-target repository tree in this PR. This is an
 inventory of configured behavior, not a scan of Jonathan's installed machines.
 Jonathan's choices are now explicit: Brave Origin on both targets; Vesktop on
 Fedora and Discord on macOS; ChatGPT as the only separately selected AI app;
-Etcher, Proton Drive and Steam desired on both; upgrades enabled on every run.
+Etcher and Steam on both; Proton Drive web-only on Fedora and the desktop app
+on macOS; upgrades enabled on every run.
 The playbook does not uninstall previously selected software or change a browser
 profile/default-browser setting.
 
@@ -30,12 +31,14 @@ profile/default-browser setting.
   and verifies its GitHub asset SHA-256 before installation. macOS uses the
   Apple Silicon Homebrew cask. [Upstream downloads](https://etcher-docs.balena.io/)
   and [release assets](https://github.com/balena-io/etcher/releases/latest).
-- **Proton Drive:** macOS desktop app is selected. Proton lists no official Linux
-  desktop sync app, but does offer an official Linux CLI. Recommended choice:
-  use the web app for now; confirm whether to add the official CLI if command-line
-  upload/download is useful. A CLI is not equivalent to background desktop sync.
-  No unofficial wrapper is installed. [Official downloads](https://proton.me/drive/download)
-  and [CLI documentation](https://proton.me/support/drive-cli).
+- **Proton Drive:** Jonathan explicitly chose web-only access on Fedora after
+  reviewing the CLI's purpose. Use [the web app](https://drive.proton.me) in the
+  existing browser. macOS retains the official desktop app. This is an intentional
+  platform difference; no CLI, unofficial wrapper, browser shortcut, PWA, or
+  background synchronization service is installed on Fedora. Proton documents
+  the CLI for explicit transfers and scripted workflows; it is not selected here.
+  [Official downloads](https://proton.me/drive/download) and
+  [CLI documentation](https://proton.me/support/drive-cli).
 - **Steam:** selected on both; Fedora retains its community Flathub package and
   macOS uses the [Steam cask](https://formulae.brew.sh/cask/steam). Actual game,
   controller, GPU and architecture compatibility remains outside package setup.
@@ -106,7 +109,7 @@ repository/channel; `present` does not mean the two OSes get the same version.
 | `steam` | User Flathub `com.valvesoftware.Steam` | Homebrew cask `steam` | Both selected; different packaging channels |
 | `1password` | Vendor DNF package `1password` | Homebrew cask `1password` | Same named software, platform packaging differs |
 | `obsidian` | User Flathub `md.obsidian.Obsidian` | Homebrew cask `obsidian` | Same named software; install scope/channel differs |
-| `proton-drive` | Desktop app unavailable; web/official CLI options above | Homebrew cask `proton-drive` | Desired parity blocked by desktop availability |
+| `proton-drive` | Web-only at `drive.proton.me`; no installed package | Homebrew cask `proton-drive` | Intentional web/desktop split approved by Jonathan |
 | `proton-mail` | User Flathub `me.proton.Mail` | Homebrew cask `proton-mail` | Same named software; install scope/channel differs |
 | `brave-origin` | Official stable DNF `brave-origin` | Homebrew cask `brave-origin` | Exact same product; macOS license activation required |
 
@@ -179,5 +182,5 @@ not install Flatpak applications or launch GUIs. There is no macOS runtime job.
 Thus verified Fedora native installation is not evidence of functional parity
 for GUI apps, sandbox permissions, macOS packages, or login sessions.
 
-Remaining review: Proton Drive CLI versus web-only Fedora use, verified ChatGPT
-Fedora bootstrap, and full desktop validation on disposable Fedora/macOS targets.
+Remaining review: verified ChatGPT Fedora bootstrap and full desktop validation
+on disposable Fedora/macOS targets. The Proton Drive choice is resolved.
