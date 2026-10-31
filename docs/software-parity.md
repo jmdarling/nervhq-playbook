@@ -20,11 +20,10 @@ profile/default-browser setting.
   Codex CLI/app entries are removed; the current ChatGPT app itself includes
   Codex capabilities, which package selection cannot remove. OpenAI now also
   supports a [Fedora 44 Linux preview](https://learn.chatgpt.com/docs/linux/linux-app).
-  **Fedora automation remains blocked:** the official RPM download is known,
-  but this environment could not retrieve the package/signing metadata to verify
-  a safe unattended bootstrap. No guessed repository/key or unsigned fallback is
-  installed. For now follow the official Fedora download/install instructions;
-  its installed signed repository then participates in the all-DNF upgrade task.
+  Fedora now bootstraps a verified official RPM before routine DNF upgrades.
+  The installed signed OpenAI repository supplies subsequent versions; the
+  bootstrap pin does not cap routine upgrades. No application is launched or
+  account configured by the playbook. See the verification contract below.
   [Current macOS cask](https://formulae.brew.sh/cask/chatgpt).
 - **Etcher:** an official Linux x86_64 client exists, including an RPM, so an
   alternative is unnecessary. Fedora resolves the latest stable upstream RPM
@@ -100,7 +99,7 @@ repository/channel; `present` does not mean the two OSes get the same version.
 
 | Catalog entry | Fedora 44 x86_64 | Apple Silicon macOS | Interpretation |
 | --- | --- | --- | --- |
-| `chatgpt` | Official preview; manual bootstrap pending verification above | Homebrew cask `chatgpt` | Only selected AI app; includes upstream Codex features |
+| `chatgpt` | Verified official RPM bootstrap, then signed OpenAI DNF repository | Homebrew cask `chatgpt` | Only selected AI app; includes upstream Codex features |
 | `discord` | User Flathub `dev.vencord.Vesktop` | Homebrew cask `discord` | Different clients; intentionally approved |
 | `syncthing` | DNF `syncthing` | Homebrew **formula** `syncthing` | Same named software, platform packaging differs |
 | `balenaetcher` | Official release RPM, verified SHA-256 | Homebrew cask `balenaetcher` | Both selected, platform-native distributions |
@@ -182,5 +181,46 @@ not install Flatpak applications or launch GUIs. There is no macOS runtime job.
 Thus verified Fedora native installation is not evidence of functional parity
 for GUI apps, sandbox permissions, macOS packages, or login sessions.
 
-Remaining review: verified ChatGPT Fedora bootstrap and full desktop validation
-on disposable Fedora/macOS targets. The Proton Drive choice is resolved.
+Remaining review: full desktop validation on disposable Fedora/macOS targets.
+The Proton Drive choice is resolved.
+
+## ChatGPT Fedora bootstrap
+
+The catalog selects `chatgpt` through DNF. Before broad package upgrades, a missing
+ChatGPT package or missing pinned repository key triggers the
+[bootstrap](../roles/fedora/tasks/bootstrap_chatgpt_payload.yml). Downloads and
+verification run as the desktop user in a temporary directory. The
+[verifier](../scripts/verify-chatgpt-rpm.sh) checks both SHA-256 hashes, the exact
+public-key fingerprint and armored-key hash, then verifies the RPM signature in
+an isolated RPM database and checks package name/version/architecture. Only then
+are the verified key and RPM installed with sudo. DNF5 package signature checks
+remain enabled; newer installed versions are not downgraded. Temporary downloads
+and key databases are removed on success or failure. Existing installations skip
+the bootstrap download and continue through normal DNF updates.
+
+Verified bootstrap inputs (2026-10-31, independently inspected on EVA without installation):
+
+- [Official immutable RPM](https://persistent.oaistatic.com/codex-app-prod/linux/rpm/x86_64/chatgpt-26.1027.30824-1.x86_64.rpm):
+  `chatgpt-26.1027.30824-1.x86_64`, 597768561 bytes;
+  SHA-256 `c45045bef9cff939ff97797fb7b451ae7c5e499f321c02723d94395cf227dc86`.
+- [Official public key bundle](https://persistent.oaistatic.com/codex-app-prod/linux/arch/26.1027.30824/repository-signing-key.gpg):
+  SHA-256 `23e2cfbdef6afe95505f9e95a2cb63585da7ffe9b06a51ec08a32407c847d596`.
+  The URL's `arch` component is OpenAI's key distribution path, not support for
+  another workstation target in this playbook.
+- RSA4096 fingerprint `3BFA0E4AE8B8CC16A2D9BA684A3B4A566C4660E4`, UID
+  `Codex Linux Repository`, independently pinned in the
+  [official installer source](https://persistent.oaistatic.com/codex-app-prod/linux/install-arch.sh)
+  (read, never executed). Armored key SHA-256:
+  `6c8933f828af390b2457f9e2d234082d783d6e4bb1911615b4861c6c61f4ea5a`.
+- Inspected RPM scriptlets configure `openai-chatgpt`, base URL
+  `https://persistent.oaistatic.com/codex-app-prod/linux/rpm/$basearch`, with
+  `gpgcheck=1`, `repo_gpgcheck=1`, and the fingerprint-qualified armored key path
+  under `/etc/pki/rpm-gpg`. Signed repository metadata and the recorded RPM digest
+  were independently verified. Key rotation requires explicit review; failures
+  do not silently disable checks or trust a replacement key.
+
+The cloud editor cannot download these URLs (proxy HTTP 403); local tests use
+fake verification tools to exercise rejection/order/cleanup contracts. CI's
+Fedora container attempts real installation, RPM verification and two-run
+convergence. Neither this nor package inspection tests GUI launch, login,
+Wayland behavior or user data. See the CI result for the exact tested revision.

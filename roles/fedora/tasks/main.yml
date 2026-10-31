@@ -1,6 +1,12 @@
 - name: Bootstrap package sources
   ansible.builtin.import_tasks: bootstrap.yml
 
+- name: Bootstrap official ChatGPT before routine repository upgrades
+  ansible.builtin.include_tasks: bootstrap_chatgpt.yml
+  when: >-
+    applications | selectattr('name', 'equalto', 'chatgpt') | selectattr('fedora', 'defined') |
+    selectattr('fedora.source', 'equalto', 'dnf') | list | length > 0
+
 - name: Upgrade packages
   ansible.builtin.include_tasks: upgrade_packages.yml
   when: workstation_upgrade_packages

@@ -1,0 +1,57 @@
+- name: Create unprivileged ChatGPT verification directory
+  ansible.builtin.tempfile:
+    state: directory
+    prefix: nervhq-chatgpt-
+  register: fedora_chatgpt_temp
+
+- name: Verify and install official ChatGPT bootstrap
+  block:
+    - name: Download pinned official ChatGPT RPM
+      ansible.builtin.get_url:
+        url: https://persistent.oaistatic.com/codex-app-prod/linux/rpm/x86_64/chatgpt-26.1027.30824-1.x86_64.rpm
+        dest: "{{ fedora_chatgpt_temp.path }}/package.rpm"
+        checksum: sha256:c45045bef9cff939ff97797fb7b451ae7c5e499f321c02723d94395cf227dc86
+        mode: "0600"
+
+    - name: Download pinned official OpenAI signing key
+      ansible.builtin.get_url:
+        url: https://persistent.oaistatic.com/codex-app-prod/linux/arch/26.1027.30824/repository-signing-key.gpg
+        dest: "{{ fedora_chatgpt_temp.path }}/key.gpg"
+        checksum: sha256:23e2cfbdef6afe95505f9e95a2cb63585da7ffe9b06a51ec08a32407c847d596
+        mode: "0600"
+
+    - name: Verify hashes fingerprint identity and signature using isolated key databases
+      ansible.builtin.script:
+        cmd: "{{ playbook_dir }}/scripts/verify-chatgpt-rpm.sh {{ fedora_chatgpt_temp.path | quote }}"
+      changed_when: false
+
+    # No privileged ChatGPT mutation occurs until every verification above succeeds.
+    - name: Install verified armored OpenAI repository key
+      become: true
+      ansible.builtin.copy:
+        src: "{{ fedora_chatgpt_temp.path }}/key.asc"
+        remote_src: true
+        dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-chatgpt-3BFA0E4AE8B8CC16A2D9BA684A3B4A566C4660E4.asc
+        mode: "0644"
+        owner: root
+        group: root
+
+    - name: Import verified OpenAI RPM signing key
+      become: true
+      ansible.builtin.rpm_key:
+        key: /etc/pki/rpm-gpg/RPM-GPG-KEY-chatgpt-3BFA0E4AE8B8CC16A2D9BA684A3B4A566C4660E4.asc
+        fingerprint: 3BFA0E4AE8B8CC16A2D9BA684A3B4A566C4660E4
+        state: present
+
+    - name: Install official ChatGPT with package signature verification enabled
+      become: true
+      ansible.builtin.dnf5:
+        name: "{{ fedora_chatgpt_temp.path }}/package.rpm"
+        state: present
+        disable_gpg_check: false
+        allow_downgrade: false
+  always:
+    - name: Remove ChatGPT downloads and temporary key databases
+      ansible.builtin.file:
+        path: "{{ fedora_chatgpt_temp.path }}"
+        state: absent

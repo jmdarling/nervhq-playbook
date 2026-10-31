@@ -1,0 +1,16 @@
+- name: Inspect installed ChatGPT package
+  ansible.builtin.command:
+    argv: [rpm, -q, chatgpt]
+  register: fedora_chatgpt_package
+  changed_when: false
+  failed_when: fedora_chatgpt_package.rc not in [0, 1]
+  check_mode: false
+
+- name: Inspect OpenAI repository key
+  ansible.builtin.stat:
+    path: /etc/pki/rpm-gpg/RPM-GPG-KEY-chatgpt-3BFA0E4AE8B8CC16A2D9BA684A3B4A566C4660E4.asc
+  register: fedora_chatgpt_key
+
+- name: Bootstrap signed ChatGPT package or repair missing key
+  ansible.builtin.include_tasks: bootstrap_chatgpt_payload.yml
+  when: fedora_chatgpt_package.rc != 0 or not fedora_chatgpt_key.stat.exists

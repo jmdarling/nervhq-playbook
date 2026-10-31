@@ -91,8 +91,9 @@ Brave Origin needs license activation on macOS. Proton Drive is intentionally
 web-only on Fedora: use https://drive.proton.me in your browser. macOS retains
 the desktop app. No Proton Drive CLI, browser shortcut, or PWA is installed.
 
-ChatGPT's official Fedora preview currently requires the documented upstream
-manual bootstrap; automatic installation awaits verified signing metadata.
+ChatGPT's official Fedora preview bootstraps from a pinned, hash- and signature-verified
+RPM, then receives updates from OpenAI's signed DNF repository. See the
+[verification contract](docs/software-parity.md#chatgpt-fedora-bootstrap).
 After running on macOS, apply OS/App Store updates in System Settings/App Store.
 
 ## Package sources and user tools

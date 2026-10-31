@@ -1,6 +1,8 @@
 applications:
   # AI
   - name: chatgpt
+    fedora:
+      source: dnf
     macos:
       source: brew
 
