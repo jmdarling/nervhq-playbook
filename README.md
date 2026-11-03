@@ -4,7 +4,7 @@ Local workstation setup for Fedora x86_64 and Apple Silicon macOS: desktop
 applications, CLI tools, fonts, and Zsh.
 Run it as the desktop user, **not root**. It installs software and changes that
 user's login shell; it does not configure application accounts, sync services,
-GPU drivers, gaming hardware, or dotfiles beyond the user-tool PATH block.
+GPU drivers, gaming hardware, or dotfiles beyond the user-tool PATH and mise blocks.
 
 ## Target contract and test coverage
 
@@ -119,9 +119,10 @@ After running on macOS, apply OS/App Store updates in System Settings/App Store.
 - macOS distinguishes Homebrew casks from formulae (Syncthing is a formula).
   Homebrew and casks may impose stricter OS requirements; inspect their current
   metadata before running. Services such as Syncthing are installed, not started.
-- Volta, Fedora Starship and Nerd Fonts use verified stable release archives.
-  No remote shell installer is executed. Volta goes to `~/.volta/bin` and
-  Starship to `~/.local/bin`; a managed `.zshrc` block adds both to PATH.
+- Fedora mise, Starship and Nerd Fonts use verified stable release archives.
+  No remote shell installer is executed. mise and Starship go to `~/.local/bin`;
+  macOS installs mise through Homebrew. Managed Zsh blocks add user tools to
+  PATH, activate mise in `.zshrc`, and expose shims in `.zprofile` for login shells.
   Starship prompt initialization is not added.
 - Fedora Etcher uses its official RPM after SHA-256 verification; macOS uses its
   cask. Brave Origin uses its official signed Fedora repository and distinct cask.
@@ -133,9 +134,33 @@ Sources: [Ansible Flatpak scope](https://docs.ansible.com/projects/ansible/lates
 [DNF5 requirements](https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/dnf5_module.html),
 [VS Code RPM setup](https://code.visualstudio.com/docs/setup/linux),
 [1Password signing fingerprints](https://support.1password.com/install-linux/),
-[Volta release](https://github.com/volta-cli/volta/releases/tag/v2.0.2),
+[mise release](https://github.com/jdx/mise/releases/tag/v2026.10.25),
 [Starship release](https://github.com/starship/starship/releases/tag/v1.24.2),
 [Nerd Fonts release/checksums](https://github.com/ryanoasis/nerd-fonts/releases/tag/v3.4.0).
+
+## Node environment
+
+Selecting mise in the CLI catalog also configures the desktop user's global
+`node = "lts"` request, installs Node and its bundled npm, and rebuilds command
+shims. The alias stays floating; normal runs install the newest available LTS,
+including a new LTS major when upstream promotes it. With
+`workstation_upgrade_packages: false`, an installed matching LTS version is reused;
+missing Node installations are still provisioned. Other global mise tools and
+settings are preserved. No separate npm, pnpm or Yarn version is selected.
+
+Interactive Zsh uses `mise activate zsh`; login shells use
+`mise activate zsh --shims`. The macOS blocks also expose Homebrew's binary
+directory so `mise` itself is available. Start a new shell after provisioning and restart
+editors that inherited the old PATH. Jobs that do not inherit a login environment
+can use `mise exec -- node ...`. See the upstream [shell setup](https://mise.jdx.dev/shell-setup.html)
+and [Node documentation](https://mise.jdx.dev/lang/node.html).
+
+Project-specific mise configurations can override the global default. The
+playbook does not rewrite project version files, migrate global Volta packages,
+or delete existing Volta installations. It replaces its own managed Volta PATH
+block; remove any separately configured Volta activation when migrating an older
+workstation. Removing mise from the CLI catalog skips its runtime configuration
+and shell activation.
 
 ## Podman development tool
 
@@ -199,8 +224,10 @@ that script on a host. It installs tools/packages and creates a test user only
 inside that container. Workflows have read-only repository permissions and no
 deployment steps or live host access.
 
-The [verified implementation CI run](https://github.com/jmdarling/nervhq-playbook/actions/runs/41152587189)
+The [previous implementation CI run](https://github.com/jmdarling/nervhq-playbook/actions/runs/41152587189)
 installed ChatGPT `26.1027.30824-1.x86_64` in a disposable Fedora container,
 verified its installed files with `rpm -V`, and completed a second full run with
 `changed=0, failed=0`. It also passed lint, shell checks and all nine tests.
-This covers package installation and convergence, not desktop launch or login.
+That run predates the mise migration. The updated smoke test additionally checks
+Node/npm in fresh login and interactive Zsh sessions and the global LTS request;
+it still needs a new CI run. No desktop launch or real login-session test is claimed.

@@ -9,7 +9,7 @@ import unittest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-INSTALLERS = list(ROOT.glob('roles/*/files/*.sh'))
+INSTALLERS = list(ROOT.glob('roles/fedora/files/*.sh'))
 
 
 class Readiness(unittest.TestCase):
@@ -52,6 +52,11 @@ class Readiness(unittest.TestCase):
             'name': 'podman', 'fedora': {'source': 'dnf'},
             'macos': {'source': 'brew'},
         })
+        self.assertNotIn('volta', tools)
+        self.assertEqual(tools['mise'], {
+            'name': 'mise', 'fedora': {'source': 'script', 'script_name': 'install-mise.sh'},
+            'macos': {'source': 'brew'},
+        })
         apps = {item['name']: item for item in host['applications']}
         self.assertNotIn('codex', apps)
         self.assertNotIn('codex-app', apps)
@@ -83,16 +88,19 @@ class Readiness(unittest.TestCase):
             playbook.write_text(yaml.safe_dump([{
                 'name': 'Isolated user environment test',
                 'hosts': 'localhost', 'gather_facts': False,
-                'vars': {'ansible_facts': {'env': {'HOME': tmp}}},
+                'vars': {'ansible_facts': {'env': {'HOME': tmp}},
+                         'workstation_os': 'fedora', 'cli_tools': []},
                 'tasks': [{'name': 'Configure path', 'ansible.builtin.import_tasks':
                            str(ROOT / 'tasks/user_environment.yml')}],
             }]))
-            for expected in ['changed=1', 'changed=0']:
+            for expected in ['changed=2', 'changed=0']:
                 result = subprocess.run(['ansible-playbook', str(playbook)], cwd=ROOT, env=self.env,
                                         capture_output=True, text=True, check=True)
                 self.assertIn(expected, result.stdout)
             contents = (Path(tmp) / '.zshrc').read_text()
-            self.assertEqual(contents.count('export VOLTA_HOME='), 1)
+            self.assertNotIn('VOLTA_HOME', contents)
+            self.assertNotIn('activate zsh', contents)
+            self.assertTrue((Path(tmp) / '.zprofile').exists())
 
     def test_wrong_os_fails_before_mutation(self):
         # Independent of the CI operating system: deliberately request another family.

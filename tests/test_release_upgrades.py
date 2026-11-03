@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class ReleaseUpgrades(unittest.TestCase):
     def test_versions_repairs_and_integrity_failure(self):
-        for script in ROOT.glob('roles/*/files/*.sh'):
+        for script in ROOT.glob('roles/fedora/files/*.sh'):
             with self.subTest(script=script), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 home = root / 'home'
@@ -30,9 +30,9 @@ class ReleaseUpgrades(unittest.TestCase):
                     command.chmod(0o755)
                 env = dict(os.environ, HOME=str(home), TMPDIR=tmp,
                            PATH=str(commands) + ':' + os.environ['PATH'])
-                if 'volta' in script.name:
-                    files = ['volta', 'volta-shim', 'volta-migrate']
-                    installed = home / '.volta/bin/volta'
+                if 'mise' in script.name:
+                    files = ['mise/bin/mise']
+                    installed = home / '.local/bin/mise'
                 elif 'starship' in script.name:
                     files = ['starship']
                     installed = home / '.local/bin/starship'

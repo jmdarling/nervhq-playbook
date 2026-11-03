@@ -1,9 +1,40 @@
-- name: Put user tools on the interactive Zsh path
+- name: Determine whether mise is selected for this platform
+  ansible.builtin.set_fact:
+    workstation_mise_enabled: >-
+      {{ cli_tools | selectattr('name', 'equalto', 'mise') | selectattr(workstation_os, 'defined') | list | length > 0 }}
+    workstation_mise_executable: >-
+      {{ '/opt/homebrew/bin/mise' if workstation_os == 'macos' else ansible_facts.env.HOME ~ '/.local/bin/mise' }}
+
+- name: Configure global Node LTS and repair mise shims
+  ansible.builtin.script:
+    cmd: "{{ playbook_dir }}/roles/common/files/configure-mise.sh {{ workstation_mise_executable | quote }}"
+    chdir: "{{ ansible_facts.env.HOME }}"
+  environment:
+    NERVHQ_UPGRADE_NODE: "{{ workstation_upgrade_packages | ternary('true', 'false') }}"
+  register: workstation_mise_configuration
+  changed_when: "'NERVHQ_CHANGED' in workstation_mise_configuration.stdout"
+  when: workstation_mise_enabled
+
+- name: Put user tools and mise activation on the interactive Zsh path
   ansible.builtin.blockinfile:
     path: "{{ ansible_facts.env.HOME }}/.zshrc"
     create: true
     mode: "0644"
     marker: "# {mark} NERVHQ USER TOOLS"
     block: |
-      export VOLTA_HOME="$HOME/.volta"
-      export PATH="$VOLTA_HOME/bin:$HOME/.local/bin:$PATH"
+      export PATH="{{ '/opt/homebrew/bin:' if workstation_mise_enabled and workstation_os == 'macos' else '' }}$HOME/.local/bin:$PATH"
+      {% if workstation_mise_enabled %}
+      eval "$("{{ workstation_mise_executable }}" activate zsh)"
+      {% endif %}
+
+- name: Expose user tools and mise shims to Zsh login shells
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_facts.env.HOME }}/.zprofile"
+    create: true
+    mode: "0644"
+    marker: "# {mark} NERVHQ USER TOOLS"
+    block: |
+      export PATH="{{ '/opt/homebrew/bin:' if workstation_mise_enabled and workstation_os == 'macos' else '' }}$HOME/.local/bin:$PATH"
+      {% if workstation_mise_enabled %}
+      eval "$("{{ workstation_mise_executable }}" activate zsh --shims)"
+      {% endif %}

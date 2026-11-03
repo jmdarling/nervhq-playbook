@@ -59,7 +59,7 @@ and upstream publication delays still apply. Updates fail visibly rather than
 silently reporting freshness. New upstream releases between runs can legitimately
 produce changes; convergence means unchanged upstream releases and local inputs.
 
-Volta on both targets, Fedora Starship and Fedora Nerd Fonts resolve the latest
+Fedora mise, Starship and Nerd Fonts resolve the latest
 stable GitHub release each run. Exact asset URLs and SHA-256 digests are checked;
 older releases lacking GitHub digests have narrowly scoped reviewed fallback
 checksums. Missing new-release digests fail closed. Installers keep version/digest
@@ -79,10 +79,13 @@ is changed. Temporary RPM downloads are removed even on install failure.
 `present` from package managers, and resolves the reviewed archive pins instead
 of latest releases. This is a reproducibility mode, not an absolute freeze:
 missing packages still install and release scripts can converge to the reviewed pin.
+The global mise Node request remains `lts`: ordinary runs refresh to the newest
+LTS, while upgrade-disabled runs reuse an installed matching version or install
+it if missing. Node includes npm; other global tools/settings are preserved.
 
 **Manual boundaries:** macOS OS/App Store updates and Apple's bundled Zsh must be
 applied through System Settings/App Store; Homebrew does not own them. The playbook
-does not upgrade Volta-managed Node runtimes/project dependencies, application
+does not upgrade project dependencies or project-pinned Node runtimes, application
 plugins, Steam games, firmware, or software installed outside these managers.
 Fedora kernel updates may require a later reboot; the playbook never reboots.
 Python/Ansible controller and collection compatibility stays pinned to Python
@@ -134,7 +137,7 @@ Sources: [CLI catalog](../inventory/group_vars/all/cli_tools.yml),
 | Git | Required before bootstrap; no Fedora catalog entry | Homebrew formula `git` | Explicit prerequisite versus managed package |
 | Podman | Official Fedora DNF `podman` | Homebrew formula `podman` | Floating package versions; native Linux versus manually initialized Linux VM; see [first use](../README.md#podman-development-tool) |
 | Neovim | DNF `neovim` | Homebrew formula `neovim` | Both floating; no editor configuration managed |
-| Volta | Verified Linux release archive, `~/.volta/bin` | Verified macOS release archive, `~/.volta/bin` | Both latest stable; different platform archives/checksums; no Node/toolchain installation |
+| mise / Node | Verified Linux mise archive, `~/.local/bin/mise` | Homebrew formula `mise` | Global `node = "lts"`, Node plus bundled npm; default runs refresh LTS; mise versions may differ by source |
 | fzf | DNF `fzf` | Homebrew formula `fzf` | Both floating; no shell integration configured |
 | Stow | DNF `stow` | Homebrew formula `stow` | Both floating; no stow commands executed |
 | zoxide | DNF `zoxide` | Homebrew formula `zoxide` | Both floating; no shell initialization configured |
@@ -157,9 +160,9 @@ verify bytes and installed-file manifests. This does not lock OS dependencies.
 | Shared controller | Python `==3.14.*`, ansible-core 2.21.5, ansible-lint 26.10.1, community.general 13.5.0 | Same | [Project metadata](../pyproject.toml), [collection pin](../requirements.yml), [bootstrap script](../scripts/bootstrap.sh); transitive Python dependencies are not locked |
 | Native prerequisites | Installs curl, tar, unzip, fontconfig, flatpak, gnupg2, python3-libdnf5, dnf5-plugins, perl-Digest-SHA | No matching bootstrap package list | [Fedora bootstrap](../roles/fedora/tasks/bootstrap.yml); platform implementation, not missing user-facing apps |
 | Package sources/trust | User Flathub; fingerprint-checked Microsoft/1Password/Brave keys; verified OpenAI bootstrap when selected; vendor repositories; Ghostty COPR when selected | Existing Homebrew; formula/cask resolution delegated to Homebrew | [Vendor configuration](../roles/fedora/tasks/configure_vendor_repositories.yml); RPM package GPG checks enabled except checksum-verified Etcher; repo metadata checks enabled for 1Password/OpenAI, disabled for VS Code/Brave |
-| Default upgrades | All DNF packages; all installed user Flatpak apps and release installers | All installed Homebrew formulae/casks; Volta latest stable | [Settings](../inventory/group_vars/all/settings.yml), [Homebrew refresh](../roles/macos/tasks/update_package_manager_cache.yml) |
+| Default upgrades | All DNF packages; all installed user Flatpak apps and release installers; global Node LTS | All installed Homebrew formulae/casks; global Node LTS | [Settings](../inventory/group_vars/all/settings.yml), [Homebrew refresh](../roles/macos/tasks/update_package_manager_cache.yml) |
 | Privilege/scope | DNF/repository/shell changes use sudo; Flatpak, user tools, fonts and PATH run as desktop user | Homebrew tasks run as desktop user; login-shell change uses sudo | Platform role tasks; no global become on either entrypoint |
-| Shell/PATH | Zsh selected from PATH; managed `.zshrc` exports `VOLTA_HOME` and prepends Volta plus `~/.local/bin` | Same | [Shared configuration](../tasks/user_environment.yml); no Starship/zoxide/fzf initialization or Homebrew `shellenv` setup |
+| Shell/PATH | Zsh selected from PATH; `.zshrc` adds user tools and activates mise; `.zprofile` exposes user tools and mise shims | Same; activation uses the Apple Silicon Homebrew mise path | [Shared configuration](../tasks/user_environment.yml); no Starship/zoxide/fzf initialization or Homebrew `shellenv` setup |
 | Services/accounts | No explicit service enable/start or application-login tasks | Same | Role task lists; package-manager postinstall side effects are outside this guarantee |
 
 The [localhost inventory](../inventory/hosts.yml) selects local execution using
@@ -182,13 +185,18 @@ suppress Flatpak prerequisites, the user Flathub remote, or VS Code/1Password/Br
 sources. ChatGPT bootstrap is conditional on selecting its Fedora DNF entry;
 Ghostty COPR is configured only when selected.
 On macOS, Homebrew metadata refresh and login-shell configuration still run with
-empty package lists. Both always run the shared PATH task. A custom Fedora CLI
+empty package lists. Both always run the shared PATH task. Global Node installation
+and mise activation run only when mise is selected for the target. Existing
+Volta binaries/packages and independently configured shell blocks are not removed;
+only the playbook's own managed Volta PATH block is replaced. A custom Fedora CLI
 list must keep Zsh or ensure it already exists for the shell step.
 
 [CI](../.github/workflows/validate.yml) lints both target trees and runs the
 remaining regression tests. The [Fedora smoke test](../tests/fedora-smoke.sh)
 selects DNF and verified release-RPM applications, leaves the full CLI/font lists in place, and
-checks two runs plus installed tools/fonts and the user Flathub remote. It does
+checks two runs plus installed tools/fonts and the user Flathub remote. It also
+checks Node/npm in fresh login and interactive Zsh shells and the global `lts`
+request. The previously linked CI run predates these mise checks. It does
 not install Flatpak applications or launch GUIs. There is no macOS runtime job.
 Thus verified Fedora native installation is not evidence of functional parity
 for GUI apps, sandbox permissions, macOS packages, or login sessions.

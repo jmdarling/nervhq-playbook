@@ -13,13 +13,12 @@ cli_tools:
       source: dnf
     macos:
       source: brew
-  - name: volta
+  - name: mise
     fedora:
       source: script
-      script_name: install-volta.sh
+      script_name: install-mise.sh
     macos:
-      source: script
-      script_name: install-volta.sh
+      source: brew
 
   # File & Directory Tools
   - name: fzf

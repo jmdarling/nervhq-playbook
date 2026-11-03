@@ -6,7 +6,8 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-INSTALLERS = list(ROOT.glob("roles/*/files/install-volta.sh")) + [
+INSTALLERS = [
+    ROOT / "roles/fedora/files/install-mise.sh",
     ROOT / "roles/fedora/files/install-starship.sh",
     ROOT / "roles/fedora/files/install-fira-code-nerd-font.sh",
 ]
