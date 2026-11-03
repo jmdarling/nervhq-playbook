@@ -28,7 +28,11 @@ PYVARS
 ansible-playbook local-fedora.yml -e @/tmp/smoke-vars.yml
 ansible-playbook local-fedora.yml -e @/tmp/smoke-vars.yml | tee /tmp/second-run.log
 grep -Eq 'changed=0[[:space:]]' /tmp/second-run.log
-"$HOME/.volta/bin/volta" --version
+"$HOME/.local/bin/mise" --version
+# Read the managed login profile and interactive setup from a clean PATH.
+env PATH=/usr/bin:/bin zsh -lc 'command -v mise node npm npx && node --version && npm --version && npx --version'
+env PATH=/usr/bin:/bin zsh -ic 'command -v mise node npm npx && node --version && npm --version && npx --version'
+test "$("$HOME/.local/bin/mise" config get --global tools.node)" = lts
 "$HOME/.local/bin/starship" --version
 # CLI checks only: do not create containers, machines, sockets or user namespaces.
 podman --version
