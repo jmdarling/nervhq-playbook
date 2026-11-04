@@ -15,17 +15,17 @@ GPU drivers, gaming hardware, or dotfiles beyond the user-tool PATH and mise blo
 
 Fedora Atomic/Silverblue/Kinoite, Arch Linux, other distributions, Linux ARM, and Intel Macs
 are outside this catalog's supported targets. The preflight rejects them before
-package changes. Python **3.14** is required: Ansible core 2.21.5 fails on Python
-3.15's removed `dataclasses._is_type`. Package metadata rejects incompatible
-Python versions before installing tools. Do not upgrade this constraint until
-Ansible supports the new controller and all checks pass. Python is required to
-run Ansible, its modules, lint and these tests; it is not an unused application.
-The [upstream support matrix](https://docs.ansible.com/projects/ansible/latest/reference_appendices/release_and_maintenance.html)
-currently supports Python 3.12–3.14 for ansible-core 2.21; this repository deliberately
-tests only 3.14. [Renovate policy](renovate.json) keeps the CI Python dependency
-within `>=3.14 <3.15`, permitting patch releases without disabling other updates.
-The workflow selects `3.14` rather than a fixed patch. Revisit the policy together
-with project metadata, bootstrap, preflight and CI when upgrading the controller.
+package changes. Python **3.14** remains the required controller version with
+`ansible-core==2.22.0`, as pinned in [project metadata](pyproject.toml). The project
+requires `==3.14.*`; bootstrap and preflight enforce the same minor version, and
+CI tests only 3.14. Package metadata rejects incompatible Python versions before
+installing tools. Python is required to run Ansible, its modules, lint and these
+tests; it is not an unused application.
+[Renovate policy](renovate.json) keeps the CI Python dependency within
+`>=3.14 <3.15`, permitting patch releases without disabling other updates.
+The workflow selects `3.14` rather than a fixed patch. Before changing the Python
+constraint, review the [upstream support matrix](https://docs.ansible.com/projects/ansible/latest/reference_appendices/release_and_maintenance.html)
+and update project metadata, bootstrap, preflight and CI together, then run all checks.
 
 CI does not establish that GUI apps launch or that a real login/session works.
 The Fedora container smoke excludes Flatpak application installation and GUI launches.
