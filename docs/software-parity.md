@@ -92,7 +92,7 @@ The playbook uses the installed Ansible and its supported Python, with no runtim
 version-number gates. The full Ansible package provides `community.general`;
 core-only installs receive an early diagnostic instead of failing later during
 role parsing. The optional development environment uses the reviewed tooling
-versions in `pyproject.toml` and `requirements.yml`; its Python minimum follows
+versions in `pyproject.toml`; its Python minimum follows
 those tools, not an arbitrary minor-version allowlist. CI exercises Python
 3.13, 3.14 and 3.15.
 This scope must not be described as a guarantee that every byte on a machine is
@@ -156,7 +156,7 @@ verify bytes and installed-file manifests. This does not lock OS dependencies.
 | --- | --- | --- | --- |
 | Supported target | Mutable Fedora, x86_64; Atomic rejected | Darwin, arm64, preinstalled Homebrew; cask OS constraints still apply | [Preflight](../tasks/preflight.yml); demonstrable platform contract |
 | Operator prerequisites | System Ansible, normal desktop sudo access and working DNF repositories | Ansible, Homebrew and Command Line Tools per README | [First-run instructions](../README.md#run-on-a-fresh-fedora-installation); Fedora installs Git and native prerequisites itself |
-| Development controller | Python `>=3.13`, ansible-core 2.22.0, ansible-lint 26.11.0, community.general 14.0.0; optional for workstation runs | Same | [Project metadata](../pyproject.toml), [collection pin](../requirements.yml), [bootstrap script](../scripts/bootstrap.sh); transitive Python dependencies are not locked |
+| Development controller | Python `>=3.13`, full Ansible 15.0.0b1 with bundled collections, ansible-core 2.22.0 and ansible-lint 26.11.0; optional for workstation runs | Same | [Project metadata](../pyproject.toml), [bootstrap script](../scripts/bootstrap.sh); transitive Python dependencies are not locked |
 | Native prerequisites | Installs a curl provider, tar, gzip, unzip, fontconfig, flatpak, gnupg2 and the detected DNF backend's Python binding | No matching bootstrap package list | [Fedora bootstrap](../roles/fedora/tasks/bootstrap.yml); platform implementation, not missing user-facing apps |
 | Package sources/trust | User Flathub; fingerprint-checked Microsoft/1Password/Brave keys; verified OpenAI bootstrap when selected; vendor repositories; Ghostty COPR when selected | Existing Homebrew; formula/cask resolution delegated to Homebrew | [Vendor configuration](../roles/fedora/tasks/configure_vendor_repositories.yml); RPM package GPG checks enabled except checksum-verified Etcher; repo metadata checks enabled for 1Password/OpenAI, disabled for VS Code/Brave |
 | Default upgrades | All DNF packages; all installed user Flatpak apps and release installers; global Node LTS | All installed Homebrew formulae/casks; global Node LTS | [Settings](../inventory/group_vars/all/settings.yml), [Homebrew refresh](../roles/macos/tasks/update_package_manager_cache.yml) |
@@ -252,8 +252,12 @@ GUI launch, login, Wayland behavior, user data, and macOS runtime remain unteste
 No Arch/AUR support or AUR collections remain. `community.general` is still
 required by user-scoped Flatpak operations on Fedora and Homebrew operations on
 macOS. The full distro Ansible package includes it; a preflight check diagnoses
-core-only installs before loading roles. Workstation runs do not install or
-upgrade controller collections.
+core-only or incomplete installs by checking the actual required modules before
+loading roles. Workstation runs do not install or upgrade controller collections.
+The optional developer setup also uses the full Ansible package, so neither
+workflow downloads collections separately. Its Ansible 15 beta bundle is the
+available full package compatible with the existing core 2.22 pin; the core
+version remains stable and the Fedora system package is unchanged.
 
 Native prerequisites have direct uses: curl downloads verified release archives;
 tar + gzip extract mise/Starship; unzip extracts fonts; fontconfig rebuilds the

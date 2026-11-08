@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "nervhq-playbook-tools"
 version = "0.1.0"
 requires-python = ">=3.13"
-dependencies = ["ansible-core==2.22.0", "ansible-lint==26.11.0"]
+dependencies = ["ansible==15.0.0b1", "ansible-core==2.22.0", "ansible-lint==26.11.0"]
 
 [tool.setuptools]
 packages = []

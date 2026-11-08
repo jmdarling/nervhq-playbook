@@ -49,7 +49,7 @@ ansible-playbook local-fedora.yml --ask-become-pass
 ```
 
 That is the workstation entry point. No bootstrap script, virtualenv activation,
-`pip` or manual `ansible-galaxy` command is required. The playbook installs Git
+`pip` or separate collection setup is required. The playbook installs Git
 and its other native prerequisites itself. Normal Fedora Workstation already
 provides sudo; the desktop user must be allowed to use it.
 
@@ -74,8 +74,11 @@ bash scripts/bootstrap.sh
 . .venv/bin/activate
 ```
 
-The development bootstrap creates `.venv`, installs pinned Ansible core/lint, and
-installs the exact collections in `requirements.yml`. It does not execute workstation tasks.
+The development bootstrap creates `.venv` and installs the full Ansible package
+with its bundled collections, plus the pinned core and lint versions. It does not
+execute workstation tasks or download collections separately. The Ansible 15 beta
+bundle is currently required for the existing Ansible core 2.22 development pin;
+this does not change Fedora's distro-provided Ansible.
 
 ## Review, customize, run
 
