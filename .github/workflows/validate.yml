@@ -9,6 +9,10 @@ permissions:
 
 jobs:
   static-checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.13", "3.14", "3.15"]
     runs-on: ubuntu-latest
     env:
       ANSIBLE_BECOME_ASK_PASS: "false"
@@ -19,7 +23,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
-          python-version: "3.14"
+          python-version: ${{ matrix.python }}
           cache: pip
           cache-dependency-path: |
             requirements-dev.txt
@@ -39,6 +43,15 @@ jobs:
         run: python -m unittest discover -s tests -v
 
   fedora-smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - release: "44"
+            image: fedora@sha256:43b29f65a41eb9c35e1cd5323e3bdf3b655c2357a9f4f1ff2f9c2798e5045d80
+          - release: "45"
+            image: registry.fedoraproject.org/fedora@sha256:e736b5d06f96f7560b82d106444cb00eb5dd735f30b2c15e575213a218810e18
+    name: Fedora ${{ matrix.release }} system Ansible smoke
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -48,5 +61,5 @@ jobs:
         run: >-
           docker run --rm
           -v "$PWD:/source:ro"
-          fedora@sha256:43b29f65a41eb9c35e1cd5323e3bdf3b655c2357a9f4f1ff2f9c2798e5045d80
+          ${{ matrix.image }}
           bash /source/tests/fedora-smoke.sh

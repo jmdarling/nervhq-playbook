@@ -109,7 +109,7 @@ class Readiness(unittest.TestCase):
                                 capture_output=True, text=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('changed=0', result.stdout)
-        self.assertIn('Run as your desktop user with Python 3.14', result.stdout)
+        self.assertIn('Run as your desktop user. Targets are', result.stdout)
 
 
 if __name__ == '__main__':

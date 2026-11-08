@@ -1,0 +1,31 @@
+# Check before loading roles so core-only installations get a useful diagnostic
+# instead of an unresolved-module parser error. Full Ansible includes this collection.
+- name: Discover controller collections with the running Ansible interpreter
+  ansible.builtin.command:
+    argv:
+      - "{{ ansible_playbook_python }}"
+      - -m
+      - ansible.cli.galaxy
+      - collection
+      - list
+      - community.general
+      - --format
+      - json
+  register: workstation_collections
+  changed_when: false
+  check_mode: false
+
+- name: Determine whether the controller needs community.general
+  ansible.builtin.set_fact:
+    workstation_collection_missing: >-
+      {{ workstation_collections.stdout | from_json | dict2items |
+         map(attribute='value') | map('dict2items') | flatten |
+         selectattr('key', 'equalto', 'community.general') | list | length == 0 }}
+
+- name: Require the collection supplied by the full Ansible package
+  ansible.builtin.assert:
+    that: not workstation_collection_missing
+    fail_msg: >-
+      community.general is needed for Flatpak and Homebrew, not AUR.
+      Install the full Ansible package (Fedora: sudo dnf install ansible), not only ansible-core.
+      Alternatively use the optional development bootstrap described in README.md.

@@ -15,7 +15,7 @@
 
     - name: Install verified upstream RPM and resolve dependencies
       become: true
-      ansible.builtin.dnf5:
+      ansible.builtin.dnf:
         name: "{{ fedora_rpm_temp.path }}/package.rpm"
         state: present
         # Etcher publishes SHA-256 release digests, not a configured RPM signing key.

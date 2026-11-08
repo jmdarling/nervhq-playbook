@@ -1,6 +1,8 @@
 cli_tools:
   # Development Tools
   - name: git
+    fedora:
+      source: dnf
     macos:
       source: brew
   - name: podman

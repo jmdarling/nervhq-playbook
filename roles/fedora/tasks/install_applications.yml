@@ -19,7 +19,7 @@
   when:
     - item.fedora is defined
     - item.fedora.source == 'dnf'
-  ansible.builtin.dnf5:
+  ansible.builtin.dnf:
     name: "{{ item.fedora.name | default(item.name) }}"
     state: "{{ 'latest' if workstation_upgrade_packages else 'present' }}"
   become: true
