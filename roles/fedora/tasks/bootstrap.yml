@@ -1,7 +1,31 @@
+# Bootstrap through the CLI so older Ansible versions do not need the Python
+# package-manager bindings in order to install those same bindings.
+- name: Check the system Python package-manager bindings
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/python3
+      - -c
+      - "import {{ 'libdnf5' if ansible_facts.pkg_mgr == 'dnf5' else 'dnf' }}"
+  register: fedora_dnf_bindings
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Install missing system Python package-manager bindings
+  become: true
+  ansible.builtin.command:
+    argv:
+      - dnf
+      - install
+      - -y
+      - "{{ 'python3-libdnf5' if ansible_facts.pkg_mgr == 'dnf5' else 'python3-dnf' }}"
+  when: fedora_dnf_bindings.rc != 0
+  changed_when: true
+
 - name: Install Fedora prerequisites
   become: true
-  ansible.builtin.dnf5:
-    name: [curl, tar, unzip, fontconfig, flatpak, gnupg2, python3-libdnf5, dnf5-plugins, perl-Digest-SHA]
+  ansible.builtin.dnf:
+    name: [/usr/bin/curl, tar, gzip, unzip, fontconfig, flatpak, gnupg2]
     state: present
 
 - name: Configure user Flathub remote

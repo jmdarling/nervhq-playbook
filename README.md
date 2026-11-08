@@ -10,50 +10,75 @@ GPU drivers, gaming hardware, or dotfiles beyond the user-tool PATH and mise blo
 
 | Target | Prerequisites | Coverage |
 | --- | --- | --- |
-| Fedora 44 x86_64, mutable Workstation | Python 3.14, sudo, Git; working official repositories | CI container smoke: real DNF5/bootstrap, native/COPR/vendor packages, user Flathub remote, CLI tools, verified release installers, fonts; two runs |
-| Apple Silicon macOS | Python 3.14, Homebrew and Xcode Command Line Tools; OS supported by selected casks | Static validation and isolated failure tests; full Homebrew/cask/login-shell run still needs an Apple Silicon Mac |
+| Fedora x86_64, mutable Workstation | Fedora's `ansible` package and normal desktop-user sudo access; working official repositories | Fedora 44/45 CI matrix exercises system Ansible, real DNF/bootstrap, native/COPR/vendor packages, user Flathub remote, CLI tools, verified release installers and fonts; two runs |
+| Apple Silicon macOS | Working Ansible, Homebrew and Xcode Command Line Tools; OS supported by selected casks | Static validation and isolated failure tests; full Homebrew/cask/login-shell run still needs an Apple Silicon Mac |
 
 Fedora Atomic/Silverblue/Kinoite, Arch Linux, other distributions, Linux ARM, and Intel Macs
 are outside this catalog's supported targets. The preflight rejects them before
-package changes. Python **3.14** remains the required controller version with
-`ansible-core==2.22.0`, as pinned in [project metadata](pyproject.toml). The project
-requires `==3.14.*`; bootstrap and preflight enforce the same minor version, and
-CI tests only 3.14. Package metadata rejects incompatible Python versions before
-installing tools. Python is required to run Ansible, its modules, lint and these
-tests; it is not an unused application.
-[Renovate policy](renovate.json) keeps the CI Python dependency within
-`>=3.14 <3.15`, permitting patch releases without disabling other updates.
-The workflow selects `3.14` rather than a fixed patch. Before changing the Python
-constraint, review the [upstream support matrix](https://docs.ansible.com/projects/ansible/latest/reference_appendices/release_and_maintenance.html)
-and update project metadata, bootstrap, preflight and CI together, then run all checks.
+package changes. Use the Python supported by your installed Ansible, including
+Fedora 45's system Python. The playbook does not require a separate Python
+installation, pip, a virtualenv, or lint tooling. The playbook checks the actual
+platform and package-manager capabilities, not OS, Python or Ansible version numbers.
+Newer or older releases are not rejected merely because they are outside the CI
+matrix. Availability of vendor packages and compatibility with the installed
+Ansible remain upstream constraints.
+
+The tools in [project metadata](pyproject.toml) are optional **development
+validation** dependencies, not workstation runtime prerequisites. Their Python
+minimum follows the pinned Ansible toolchain; CI tests Python 3.13, 3.14 and 3.15
+separately from the system-Ansible smoke tests.
 
 CI does not establish that GUI apps launch or that a real login/session works.
 The Fedora container smoke excludes Flatpak application installation and GUI launches.
 Before using a whole catalog, run twice in a disposable desktop VM/Mac and test
 application launches, log out/in, and confirm the intended login shell and PATH.
 
-## Bootstrap
+## Run on a fresh Fedora installation
 
-Install Python 3.14 and Git using your platform's trusted package manager. On
-Fedora 44, install `python3 python3-pip git sudo`; on macOS install `python@3.14`
-with Homebrew. The isolated controller does not replace the OS Python.
+As your normal desktop user, install Ansible with Fedora's package manager:
 
-Clone this repository, then from its root:
+```sh
+sudo dnf install ansible
+```
+
+Download and extract this repository (or clone it if Git is already installed),
+then run from its root:
+
+```sh
+ansible-playbook local-fedora.yml --ask-become-pass
+```
+
+That is the workstation entry point. No bootstrap script, virtualenv activation,
+`pip` or separate collection setup is required. The playbook installs Git
+and its other native prerequisites itself. Normal Fedora Workstation already
+provides sudo; the desktop user must be allowed to use it.
+
+The full Ansible package supplies `community.general`, which is still needed
+for Flatpak and Homebrew. A core-only installation receives an early diagnostic
+to install full Ansible, before package changes. No collection is installed or
+upgraded during a workstation run. `inventory/hosts.yml` selects localhost and
+the running Ansible interpreter; DNF can respawn under the OS interpreter to
+use its Python bindings.
+
+## Optional development bootstrap
+
+For contributors who want the pinned lint/test tools, use Python 3.13+ and
+run the following from the repository root. This is not needed to provision Fedora.
+On macOS, it is also one way to install Ansible after setting up Homebrew and
+Xcode Command Line Tools.
 
 ```sh
 bash scripts/bootstrap.sh
-# If Python 3.14 has another executable name/path:
-# PYTHON=/path/to/python3.14 bash scripts/bootstrap.sh
+# If your preferred Python has another executable name/path:
+# PYTHON=/path/to/python3 bash scripts/bootstrap.sh
 . .venv/bin/activate
-ansible-inventory --host localhost
 ```
 
-The bootstrap checks Python first, creates `.venv`, installs pinned Ansible
-core/lint, and installs the exact collections in `requirements.yml`. It does not
-execute workstation tasks. All commands below run from the repository root.
-`inventory/hosts.yml` explicitly selects localhost and uses the controller's
-interpreter. Local module execution therefore uses Python 3.14; DNF5 may respawn
-with the OS interpreter to access `python3-libdnf5`.
+The development bootstrap creates `.venv` and installs the full Ansible package
+with its bundled collections, plus the pinned core and lint versions. It does not
+execute workstation tasks or download collections separately. The Ansible 15 beta
+bundle is currently required for the existing Ansible core 2.22 development pin;
+this does not change Fedora's distro-provided Ansible.
 
 ## Review, customize, run
 
@@ -113,7 +138,7 @@ After running on macOS, apply OS/App Store updates in System Settings/App Store.
   Steam uses Flathub on Fedora to avoid
   undocumented Fedora RPM Fusion prerequisites. These are
   community packages; review the [Steam Flathub page](https://flathub.org/apps/com.valvesoftware.Steam).
-- Fedora uses DNF5 and installs its bindings/prerequisites. VS Code and 1Password
+- Fedora uses the detected DNF backend and installs its bindings/prerequisites. VS Code and 1Password
   use declarative vendor repositories and fingerprint-checked keys, retaining
   package signature verification. Ghostty uses the configured third-party COPR.
 - macOS distinguishes Homebrew casks from formulae (Syncthing is a formula).

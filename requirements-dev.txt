@@ -1,2 +1,2 @@
-# Project metadata enforces Python 3.14 before installing the pinned tools.
+# Optional development tools; their Python requirement follows ansible-core.
 .

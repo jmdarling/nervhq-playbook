@@ -1,4 +1,4 @@
-"""Keep controller selection and update policy consistent across entry points."""
+"""Keep optional development tooling separate from the workstation runtime."""
 import json
 from pathlib import Path
 import tomllib
@@ -11,26 +11,27 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PythonPolicy(unittest.TestCase):
-    def test_runtime_and_renovate_accept_patches_but_reject_other_minors(self):
+    def test_no_arbitrary_python_or_workstation_version_allowlist(self):
         project = tomllib.loads((ROOT / 'pyproject.toml').read_text())
-        runtime = SpecifierSet(project['project']['requires-python'])
-        rules = json.loads((ROOT / 'renovate.json').read_text())['packageRules']
-        rule = next(rule for rule in rules if rule.get('matchDepNames') == ['python'])
-        self.assertEqual(rule['matchManagers'], ['github-actions'])
-        allowed = SpecifierSet(','.join(rule['allowedVersions'].split()))
-        for version, expected in [('3.14.0', True), ('3.14.99', True),
-                                  ('3.13.9', False), ('3.15.0', False)]:
-            self.assertEqual(version in runtime, expected)
-            self.assertEqual(version in allowed, expected)
+        development_python = SpecifierSet(project['project']['requires-python'])
+        # This minimum is required by pinned ansible-core, not by the playbook.
+        self.assertEqual(str(development_python), '>=3.13')
+        for version in ['3.13.0', '3.14.0', '3.15.0', '3.16.0']:
+            self.assertIn(version, development_python)
+        renovate = json.loads((ROOT / 'renovate.json').read_text())
+        self.assertFalse(any('python' in rule.get('matchDepNames', [])
+                             and 'allowedVersions' in rule
+                             for rule in renovate.get('packageRules', [])))
         workflow = yaml.safe_load((ROOT / '.github/workflows/validate.yml').read_text())
-        selected = [step['with']['python-version'] for job in workflow['jobs'].values()
-                    for step in job['steps'] if step.get('uses', '').startswith('actions/setup-python@')]
-        self.assertEqual(selected, ['3.14'])
+        self.assertEqual(workflow['jobs']['static-checks']['strategy']['matrix']['python'],
+                         ['3.13', '3.14', '3.15'])
         bootstrap = (ROOT / 'scripts/bootstrap.sh').read_text()
-        self.assertIn('PYTHON:-python3.14', bootstrap)
-        self.assertIn('sys.version_info[:2] == (3, 14)', bootstrap)
+        self.assertIn('PYTHON:-python3', bootstrap)
+        self.assertNotIn('sys.version_info', bootstrap)
         preflight = (ROOT / 'tasks/preflight.yml').read_text()
-        self.assertIn('ansible_facts.python.version.minor == 14', preflight)
+        self.assertNotIn('ansible_facts.python.version', preflight)
+        self.assertNotIn('ansible_version', preflight)
+        self.assertNotIn('distribution_major_version', preflight)
         inventory = yaml.safe_load((ROOT / 'inventory/hosts.yml').read_text())
         self.assertEqual(inventory['all']['hosts']['localhost']['ansible_python_interpreter'],
                          '{{ ansible_playbook_python }}')

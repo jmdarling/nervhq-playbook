@@ -1,17 +1,15 @@
-- name: Require a supported controller and an unprivileged workstation user
+- name: Require a supported platform and an unprivileged workstation user
   ansible.builtin.assert:
     that:
       - ansible_playbook_python is defined
-      - ansible_facts.python.version.major == 3
-      - ansible_facts.python.version.minor == 14
       - ansible_facts.user_uid != 0
       - ansible_facts.env.HOME != '/root'
       - >-
-        (workstation_os == 'fedora' and ansible_facts.distribution == 'Fedora' and ansible_facts.distribution_major_version == '44'
+        (workstation_os == 'fedora' and ansible_facts.distribution == 'Fedora'
          and ansible_facts.architecture == 'x86_64') or
         (workstation_os == 'macos' and ansible_facts.system == 'Darwin' and ansible_facts.architecture == 'arm64')
     fail_msg: >-
-      Run as your desktop user with Python 3.14. Targets are Fedora 44 x86_64 (DNF, not Atomic), and Apple Silicon macOS with Homebrew.
+      Run as your desktop user. Targets are Fedora x86_64 (DNF, not Atomic), and Apple Silicon macOS with Homebrew.
       See README.md for prerequisites and validation limits.
 
 - name: Validate package source configuration before changing the workstation

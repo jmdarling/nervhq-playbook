@@ -9,16 +9,16 @@ url=${RELEASE_URL:-https://github.com/starship/starship/releases/download/v1.24.
 manifest="$HOME/.local/state/nervhq/starship.sha256"
 receipt="$manifest.release"
 if [ -f "$receipt" ] && [ "$(cat "$receipt")" = "$version $checksum" ] &&
-   shasum -a 256 -c "$manifest" >/dev/null 2>&1; then
+   sha256sum -c "$manifest" >/dev/null 2>&1; then
   exit 0
 fi
 curl --fail --silent --show-error --location "$url" -o "$work_dir/archive"
-printf '%s  %s\n' "$checksum" "$work_dir/archive" | shasum -a 256 -c -
+printf '%s  %s\n' "$checksum" "$work_dir/archive" | sha256sum -c -
 tar -xzf "$work_dir/archive" -C "$work_dir"
 mkdir -p "$HOME/.local/bin"
 install -m 755 "$work_dir/starship" "$HOME/.local/bin/starship"
 mkdir -p "$(dirname "$manifest")"
-shasum -a 256 "$HOME/.local/bin/starship" > "$manifest.tmp"
+sha256sum "$HOME/.local/bin/starship" > "$manifest.tmp"
 mv "$manifest.tmp" "$manifest"
 printf '%s %s\n' "$version" "$checksum" > "$receipt.tmp"
 mv "$receipt.tmp" "$receipt"

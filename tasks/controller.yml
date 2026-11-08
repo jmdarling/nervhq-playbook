@@ -1,0 +1,29 @@
+# Check actual module availability before parsing roles, not package versions.
+# The full Ansible package supplies the required Flatpak and Homebrew modules.
+- name: Select required controller modules for this platform
+  ansible.builtin.set_fact:
+    workstation_required_modules: "{{ workstation_module_catalog[workstation_os] }}"
+  vars:
+    workstation_module_catalog:
+      fedora: [community.general.flatpak, community.general.flatpak_remote]
+      macos: [community.general.homebrew, community.general.homebrew_cask]
+
+- name: Discover required modules with the running Ansible interpreter
+  ansible.builtin.command:
+    argv: "{{ [ansible_playbook_python, '-m', 'ansible.cli.doc', '--json'] + workstation_required_modules }}"
+  register: workstation_module_docs
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Require the modules supplied by the full Ansible package
+  ansible.builtin.assert:
+    that:
+      - workstation_module_docs.rc == 0
+      - >-
+        workstation_required_modules |
+        difference((workstation_module_docs.stdout | default('{}', true) | from_json).keys() | list) | length == 0
+    fail_msg: >-
+      community.general is needed for Flatpak and Homebrew, not AUR.
+      Install the full Ansible package (Fedora: sudo dnf install ansible), not only ansible-core.
+      Alternatively use the optional development bootstrap described in README.md.

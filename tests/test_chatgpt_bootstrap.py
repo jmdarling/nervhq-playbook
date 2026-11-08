@@ -73,7 +73,7 @@ if name == 'rpm' and '-qp' in args:
         verification = next(i for i, task in enumerate(block) if 'ansible.builtin.script' in task)
         self.assertTrue(all(not task.get('become', False) for task in block[:verification + 1]))
         self.assertTrue(all(task.get('become', False) for task in block[verification + 1:]))
-        install = block[-1]['ansible.builtin.dnf5']
+        install = block[-1]['ansible.builtin.dnf']
         self.assertFalse(install['disable_gpg_check'])
         self.assertFalse(install['allow_downgrade'])
         self.assertEqual(tasks[1]['always'][0]['ansible.builtin.file']['state'], 'absent')

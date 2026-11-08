@@ -45,7 +45,7 @@
 
     - name: Install official ChatGPT with package signature verification enabled
       become: true
-      ansible.builtin.dnf5:
+      ansible.builtin.dnf:
         name: "{{ fedora_chatgpt_temp.path }}/package.rpm"
         state: present
         disable_gpg_check: false

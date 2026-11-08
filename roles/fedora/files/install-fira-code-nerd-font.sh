@@ -9,18 +9,18 @@ url=${RELEASE_URL:-https://github.com/ryanoasis/nerd-fonts/releases/download/v3.
 manifest="$HOME/.local/state/nervhq/font.sha256"
 receipt="$manifest.release"
 if [ -f "$receipt" ] && [ "$(cat "$receipt")" = "$version $checksum" ] &&
-   shasum -a 256 -c "$manifest" >/dev/null 2>&1; then
+   sha256sum -c "$manifest" >/dev/null 2>&1; then
   exit 0
 fi
 curl --fail --silent --show-error --location "$url" -o "$work_dir/archive"
-printf '%s  %s\n' "$checksum" "$work_dir/archive" | shasum -a 256 -c -
+printf '%s  %s\n' "$checksum" "$work_dir/archive" | sha256sum -c -
 unzip -q "$work_dir/archive" '*.ttf' -d "$work_dir/fonts"
 mkdir -p "$HOME/.local/share/fonts"
 install -m 644 "$work_dir/fonts/"*.ttf "$HOME/.local/share/fonts/"
 fc-cache -f "$HOME/.local/share/fonts"
 
 mkdir -p "$(dirname "$manifest")"
-shasum -a 256 "$HOME/.local/share/fonts/"FiraCode*.ttf > "$manifest.tmp"
+sha256sum "$HOME/.local/share/fonts/"FiraCode*.ttf > "$manifest.tmp"
 mv "$manifest.tmp" "$manifest"
 printf '%s %s\n' "$version" "$checksum" > "$receipt.tmp"
 mv "$receipt.tmp" "$receipt"

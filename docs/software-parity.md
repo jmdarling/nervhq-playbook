@@ -88,14 +88,13 @@ applied through System Settings/App Store; Homebrew does not own them. The playb
 does not upgrade project dependencies or project-pinned Node runtimes, application
 plugins, Steam games, firmware, or software installed outside these managers.
 Fedora kernel updates may require a later reboot; the playbook never reboots.
-Python/Ansible controller and collection compatibility stays pinned to Python
-3.14 and the reviewed tooling versions; ordinary app updates do not change it.
-Python is the necessary Ansible execution runtime. Upstream ansible-core 2.21
-supports controller Python 3.12–3.14, while this repo selects/test-gates 3.14.
-[Renovate](../renovate.json) limits only the GitHub Actions `python` dependency to
-`>=3.14 <3.15`; patches remain allowed and other dependency updates are unaffected.
-Python 3.15 is outside that tested/supported contract, so the former upgrade PR
-is superseded by this compatibility policy, not by removing Python.
+The playbook uses the installed Ansible and its supported Python, with no runtime
+version-number gates. The full Ansible package provides `community.general`;
+core-only installs receive an early diagnostic instead of failing later during
+role parsing. The optional development environment uses the reviewed tooling
+versions in `pyproject.toml`; its Python minimum follows
+those tools, not an arbitrary minor-version allowlist. CI exercises Python
+3.13, 3.14 and 3.15.
 This scope must not be described as a guarantee that every byte on a machine is
 updated. macOS system updates may require interactive owner authentication and
 remain an explicit post-run step.
@@ -109,7 +108,7 @@ Sources: [application catalog](../inventory/group_vars/all/applications.yml),
 `brew_formula` source. All application package versions below float with their
 repository/channel; `present` does not mean the two OSes get the same version.
 
-| Catalog entry | Fedora 44 x86_64 | Apple Silicon macOS | Interpretation |
+| Catalog entry | Fedora 44/45 x86_64 | Apple Silicon macOS | Interpretation |
 | --- | --- | --- | --- |
 | `chatgpt` | Verified official RPM bootstrap, then signed OpenAI DNF repository | Homebrew cask `chatgpt` | Only selected AI app; includes upstream Codex features |
 | `discord` | User Flathub `dev.vencord.Vesktop` | Homebrew cask `discord` | Different clients; intentionally approved |
@@ -155,10 +154,10 @@ verify bytes and installed-file manifests. This does not lock OS dependencies.
 
 | Area | Fedora | macOS | Evidence / meaning |
 | --- | --- | --- | --- |
-| Supported target | Mutable Fedora 44, x86_64; Atomic rejected | Darwin, arm64, preinstalled Homebrew; cask OS constraints still apply | [Preflight](../tasks/preflight.yml); demonstrable platform contract |
-| Operator prerequisites | Python 3.14, Git, sudo and working DNF repositories | Python 3.14, Git, Homebrew and Command Line Tools per README | [Bootstrap instructions](../README.md#bootstrap); installer does not provision Python/Homebrew |
-| Shared controller | Python `==3.14.*`, ansible-core 2.21.5, ansible-lint 26.10.1, community.general 13.5.0 | Same | [Project metadata](../pyproject.toml), [collection pin](../requirements.yml), [bootstrap script](../scripts/bootstrap.sh); transitive Python dependencies are not locked |
-| Native prerequisites | Installs curl, tar, unzip, fontconfig, flatpak, gnupg2, python3-libdnf5, dnf5-plugins, perl-Digest-SHA | No matching bootstrap package list | [Fedora bootstrap](../roles/fedora/tasks/bootstrap.yml); platform implementation, not missing user-facing apps |
+| Supported target | Mutable Fedora, x86_64; Atomic rejected | Darwin, arm64, preinstalled Homebrew; cask OS constraints still apply | [Preflight](../tasks/preflight.yml); demonstrable platform contract |
+| Operator prerequisites | System Ansible, normal desktop sudo access and working DNF repositories | Ansible, Homebrew and Command Line Tools per README | [First-run instructions](../README.md#run-on-a-fresh-fedora-installation); Fedora installs Git and native prerequisites itself |
+| Development controller | Python `>=3.13`, full Ansible 15.0.0b1 with bundled collections, ansible-core 2.22.0 and ansible-lint 26.11.0; optional for workstation runs | Same | [Project metadata](../pyproject.toml), [bootstrap script](../scripts/bootstrap.sh); transitive Python dependencies are not locked |
+| Native prerequisites | Installs a curl provider, tar, gzip, unzip, fontconfig, flatpak, gnupg2 and the detected DNF backend's Python binding | No matching bootstrap package list | [Fedora bootstrap](../roles/fedora/tasks/bootstrap.yml); platform implementation, not missing user-facing apps |
 | Package sources/trust | User Flathub; fingerprint-checked Microsoft/1Password/Brave keys; verified OpenAI bootstrap when selected; vendor repositories; Ghostty COPR when selected | Existing Homebrew; formula/cask resolution delegated to Homebrew | [Vendor configuration](../roles/fedora/tasks/configure_vendor_repositories.yml); RPM package GPG checks enabled except checksum-verified Etcher; repo metadata checks enabled for 1Password/OpenAI, disabled for VS Code/Brave |
 | Default upgrades | All DNF packages; all installed user Flatpak apps and release installers; global Node LTS | All installed Homebrew formulae/casks; global Node LTS | [Settings](../inventory/group_vars/all/settings.yml), [Homebrew refresh](../roles/macos/tasks/update_package_manager_cache.yml) |
 | Privilege/scope | DNF/repository/shell changes use sudo; Flatpak, user tools, fonts and PATH run as desktop user | Homebrew tasks run as desktop user; login-shell change uses sudo | Platform role tasks; no global become on either entrypoint |
@@ -247,3 +246,29 @@ shell checks and all nine regression tests passed. Local tests use fake
 verification tools to exercise rejection/order/cleanup contracts; the local
 cloud proxy's download restriction did not prevent hosted CI validation.
 GUI launch, login, Wayland behavior, user data, and macOS runtime remain untested.
+
+## Dependency audit and first-run contract
+
+No Arch/AUR support or AUR collections remain. `community.general` is still
+required by user-scoped Flatpak operations on Fedora and Homebrew operations on
+macOS. The full distro Ansible package includes it; a preflight check diagnoses
+core-only or incomplete installs by checking the actual required modules before
+loading roles. Workstation runs do not install or upgrade controller collections.
+The optional developer setup also uses the full Ansible package, so neither
+workflow downloads collections separately. Its Ansible 15 beta bundle is the
+available full package compatible with the existing core 2.22 pin; the core
+version remains stable and the Fedora system package is unchanged.
+
+Native prerequisites have direct uses: curl downloads verified release archives;
+tar + gzip extract mise/Starship; unzip extracts fonts; fontconfig rebuilds the
+font cache; Flatpak manages user apps/remotes; gnupg2 verifies ChatGPT's signing
+key. DNF's Python binding is installed through the CLI before invoking Ansible's
+package module, so it is not a manual prerequisite. A curl-minimal provider is
+accepted. Git is part of the Fedora CLI catalog instead of a hidden prerequisite.
+
+`dnf5-plugins` was unused because COPR is configured by a repository file, and
+`perl-Digest-SHA` is no longer needed because Fedora installers use the base
+system's `sha256sum`. pip, a virtualenv and ansible-lint are development-only.
+The platform/architecture and mutable-Fedora checks remain, but OS/Python/Ansible
+version-number allowlists do not. CI releases are evidence of coverage, not a
+version permission list; untested releases still depend on upstream packages.

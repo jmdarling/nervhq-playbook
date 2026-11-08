@@ -11,6 +11,10 @@
       ansible.builtin.import_tasks: tasks/preflight.yml
       tags: always
 
+    - name: Prepare controller collections
+      ansible.builtin.import_tasks: tasks/controller.yml
+      tags: always
+
   tasks:
     - name: Include Fedora role
       ansible.builtin.include_role:
